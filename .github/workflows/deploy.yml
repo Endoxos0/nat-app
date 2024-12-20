@@ -28,7 +28,7 @@ jobs:
 
       - name: build
         env:
-          BASE_PATH: '/'
+          BASE_PATH: ''
         run: |
           sudo chmod +x node_modules/.bin/vite
           npm run build
