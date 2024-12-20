@@ -28,7 +28,7 @@ jobs:
 
       - name: build
         env:
-          BASE_PATH: '/nat-app'
+          BASE_PATH: '/'
         run: |
           sudo chmod +x node_modules/.bin/vite
           npm run build
