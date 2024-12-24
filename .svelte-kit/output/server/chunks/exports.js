@@ -24,17 +24,7 @@ function decode_params(params) {
   }
   return params;
 }
-const tracked_url_properties = (
-  /** @type {const} */
-  [
-    "href",
-    "pathname",
-    "search",
-    "toString",
-    "toJSON"
-  ]
-);
-function make_trackable(url, callback, search_params_callback) {
+function make_trackable(url, callback, search_params_callback, allow_hash = false) {
   const tracked = new URL(url);
   Object.defineProperty(tracked, "searchParams", {
     value: new Proxy(tracked.searchParams, {
@@ -53,6 +43,8 @@ function make_trackable(url, callback, search_params_callback) {
     enumerable: true,
     configurable: true
   });
+  const tracked_url_properties = ["href", "pathname", "search", "toString", "toJSON"];
+  if (allow_hash) tracked_url_properties.push("hash");
   for (const property of tracked_url_properties) {
     Object.defineProperty(tracked, property, {
       get() {
@@ -71,7 +63,7 @@ function make_trackable(url, callback, search_params_callback) {
       return inspect(url.searchParams, opts);
     };
   }
-  {
+  if (!allow_hash) {
     disable_hash(tracked);
   }
   return tracked;
