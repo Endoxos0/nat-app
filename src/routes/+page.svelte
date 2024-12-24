@@ -115,6 +115,8 @@
             Scalairen, vectoren en matrices zijn elk respectievelijk, rang-0, rang-1
             en rang-2 tensoren.
         </p>
+        <h2><a href="./worldline">Worldlines</a></h2>
+        <p></p>
     </div>
 </div>
 
