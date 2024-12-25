@@ -80,25 +80,25 @@ export class Noise {
     }
 }
 
-export function perlinCurve({ N, delta, ySample = 0, perlin = new Noise() }: { N: number, delta: number, ySample?: number, perlin?: Noise; }) {
+export function perlinCurve({ N, delta, ySample = 0, shift = 0, perlin = new Noise() }: { N: number, delta: number, ySample?: number, shift?: number, perlin?: Noise; }) {
     const samples: number[] = [];
 
     for (let I = -N; I < N; I += delta) {
         samples.push(
             I,
             0,
-            ySample + perlin.noise(0.2 * I, ySample, 0),
+            shift + perlin.noise(0.2 * I, ySample, 0),
         );
     }
     return samples;
 }
 
-export function perlinCurveP({ N, delta, ySample = 0, perlin = new Noise() }: { N: number, delta: number, ySample?: number, perlin?: Noise; }) {
+export function perlinCurveP({ N, delta, ySample = 0, shift = 0, perlin = new Noise() }: { N: number, delta: number, ySample?: number, shift?: number, perlin?: Noise; }) {
     const samples: number[] = [];
 
     for (let I = -N; I < N; I += delta) {
         samples.push(
-            ySample + perlin.noise(0.2 * I, ySample, 0),
+            shift + perlin.noise(0.2 * I, ySample, 0),
             0,
             I,
         );
@@ -107,11 +107,11 @@ export function perlinCurveP({ N, delta, ySample = 0, perlin = new Noise() }: { 
 }
 
 
-export function curveMesh({ samples, color = new Color('white'), opacity = 1 }: { samples: number[], color?: Color, opacity?: number; }) {
+export function curveMesh({ samples, color = new Color('white'), opacity = 1, lineWidth = 0.01 }: { samples: number[], color?: Color, opacity?: number, lineWidth?: number; }) {
     const geometry = new MeshLineGeometry();
     geometry.setPoints(samples);
     const res = new Vector2(window.innerWidth, window.innerHeight);
-    const material = new MeshLineMaterial({ color: color, lineWidth: 0.01, dashArray: 0, dashRatio: 0.2, resolution: res, opacity: opacity });
+    const material = new MeshLineMaterial({ color: color, lineWidth: lineWidth, dashArray: 0, dashRatio: 0.2, resolution: res, opacity: opacity });
     material.transparent = true;
     material.depthTest = false;
     const mesh = new Mesh(geometry, material);

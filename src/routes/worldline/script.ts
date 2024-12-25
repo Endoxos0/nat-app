@@ -51,13 +51,35 @@ export function init() {
 
 
     (() => {
-        let s = 20;
-        let f = 2;
+        const geometry = new SphereGeometry(.1, 32, 32);
+        const material = new MeshBasicMaterial({ color: 'red' });
+        const paraMesh = new Mesh(geometry, material);
+        scene.add(paraMesh);
+
+        let s = 40;
+        let shift = .5;
+        let f = .1;
+        let c = new Color("#2b2b2b");
+        let [axis1, axis2] = [2, -2];
         for (let i = -s; i < s; i++) {
-            let curvemesh = curveMesh({ samples: perlinCurve({ N: 30, delta: 0.1, ySample: f * i, perlin, }), opacity: .1 });
+            let curvemesh = curveMesh({ samples: perlinCurve({ N: 30, delta: 0.1, ySample: f * i, shift: shift * i, perlin, }), color: c, lineWidth: 0.005 });
             scene.add(curvemesh);
-            let curvemeshP = curveMesh({ samples: perlinCurveP({ N: 30, delta: 0.1, ySample: f * i, perlin, }), opacity: .1 });
+            let curvemeshP = curveMesh({ samples: perlinCurveP({ N: 30, delta: 0.1, ySample: f * i, shift: shift * i, perlin, }), color: c, lineWidth: 0.005 });
             scene.add(curvemeshP);
+
+            // if (i == axis1) {
+            //     curvemesh.material.color = new Color("blue");
+            //     curvemesh.material.opacity = .4;
+            // }
+            // if (i == axis2) {
+            //     curvemeshP.material.color = new Color("blue");
+            //     curvemeshP.material.opacity = .4;
+            // }
+
+            // dragControls.addEventListener('drag', (event) => {
+            //     curvemesh.geometry.setPoints(perlinCurve({ N: 30, delta: 0.1, ySample: properTime * i, shift: shift * i, perlin, }));
+            //     curvemeshP.geometry.setPoints(perlinCurveP({ N: 30, delta: 0.1, ySample: properTime * i, shift: shift * i, perlin, }));
+            // });
         }
     })();
     // dragControls.addEventListener('drag', (event) => {
