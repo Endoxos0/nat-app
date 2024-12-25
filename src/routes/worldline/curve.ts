@@ -1,5 +1,5 @@
 import { MeshLineGeometry, MeshLineMaterial, raycast } from "meshline";
-import { Color, Mesh, MeshBasicMaterial, Vector2, Vector3 } from "three";
+import { AdditiveBlending, Color, CustomBlending, Mesh, MeshBasicMaterial, MultiplyBlending, NoBlending, SubtractiveBlending, Vector2, Vector3 } from "three";
 
 // Simple 1D Perlin noise implementation
 function noise(x: number) {
@@ -18,14 +18,28 @@ function noise(x: number) {
     return (1 - fade) * a + fade * b;
 }
 
-export function generateFlowingCurve2D(numPoints = 100, complexity = 0.02, amplitude = 100, phase: number, size: number = .01, stretch: number = 2) {
+export function generateFlowingCurve2D(numPoints = 100, complexity = 0.02, amplitude = 100, phase: number, size: number = .01, stretch: number = 2, offset = new Vector3(0, 0, 0)) {
     const points: number[] = [];
 
     for (let i = -numPoints; i < numPoints; i++) {
         points.push(
-            stretch * size * i * 5,
-            0,
-            size * amplitude * noise(i * complexity + phase),
+            stretch * size * i * 5 + offset.x,
+            offset.y,
+            size * amplitude * noise(i * complexity + phase) + offset.z,
+        );
+    }
+
+    return points;
+}
+
+export function generateFlowingCurve2DXZ(numPoints = 100, complexity = 0.02, amplitude = 100, phase: number, size: number = .01, stretch: number = 2, offset = new Vector3(0, 0, 0)) {
+    const points: number[] = [];
+
+    for (let i = -numPoints; i < numPoints; i++) {
+        points.push(
+            size * amplitude * noise(i * complexity + phase) + offset.z,
+            offset.y,
+            stretch * size * i * 5 + offset.x,
         );
     }
 
@@ -115,10 +129,10 @@ export function normalizeDeviceSpace(vector: Vector3, width: number, height: num
     return v;
 };
 
-export function noiseCurveMesh(color = new Color(0xffffff), opacity = 1, complexity = 0.02, amplitude = 250): [Mesh, number[]] {
+export function noiseCurveMesh(color = new Color(0xffffff), opacity = 1, complexity = 0.02, amplitude = 250, offset = new Vector3(0, 0, 0)): [Mesh, number[]] {
     const geometry = new MeshLineGeometry();
     let phase = Math.random() * 1000;
-    let curve = generateFlowingCurve2D(400, complexity, amplitude, phase, .01);
+    let curve = generateFlowingCurve2D(400, complexity, amplitude, phase, .01, 2, offset);
 
     geometry.setPoints(curve);
     const res = new Vector2(window.innerWidth, window.innerHeight);
@@ -129,4 +143,33 @@ export function noiseCurveMesh(color = new Color(0xffffff), opacity = 1, complex
     mesh.raycast = raycast;
 
     return [mesh, curve];
+}
+
+export function noiseCurveMeshXZ(color = new Color(0xffffff), opacity = 1, complexity = 0.02, amplitude = 250, offset = new Vector3(0, 0, 0)): [Mesh, number[]] {
+    const geometry = new MeshLineGeometry();
+    let phase = Math.random() * 1000;
+    let curve = generateFlowingCurve2DXZ(400, complexity, amplitude, phase, .01, 2, offset);
+
+    geometry.setPoints(curve);
+    const res = new Vector2(window.innerWidth, window.innerHeight);
+    const material = new MeshLineMaterial({ color: color, lineWidth: 0.01, dashArray: 0, dashRatio: 0.2, resolution: res, opacity: opacity });
+    material.transparent = true;
+    material.depthTest = false;
+    const mesh = new Mesh(geometry, material);
+    mesh.raycast = raycast;
+
+    return [mesh, curve];
+}
+
+export function arbitraryNoiseGrid(N: number) {
+    let vert: Mesh[] = [];
+    let hori: Mesh[] = [];
+    for (let i = -N; i < N; i++) {
+        let [mz, cz] = noiseCurveMesh(new Color('white'), .1, .01, 125, new Vector3().setZ(i * 2.5),);
+        let [my, cy] = noiseCurveMeshXZ(new Color('white'), .1, .01, 125, new Vector3().setZ(i * 2.5));
+
+        vert.push(mz);
+        hori.push(my);
+    };
+    return [vert, hori];
 }
