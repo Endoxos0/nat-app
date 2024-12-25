@@ -65,7 +65,7 @@ ul {
 }
 
 .katex-html {
-    font-size: 2vw;
+    font-size: 1vw;
 }
 
 .symbol {
@@ -75,6 +75,15 @@ ul {
     pointer-events: none;
 }
 
-.equation {
+.symbol .katex-html {
+    font-size: 1em;
+}
+
+.equation .katex-html {
+    font-size: 1.5em;
     margin: 1em;
+    z-index: 1;
+    position: absolute;
+    user-select: none;
+    pointer-events: none;
 }

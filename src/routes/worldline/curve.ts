@@ -1,4 +1,5 @@
-import { Vector2, Vector3 } from "three";
+import { MeshLineGeometry, MeshLineMaterial, raycast } from "meshline";
+import { Color, Mesh, MeshBasicMaterial, Vector2, Vector3 } from "three";
 
 // Simple 1D Perlin noise implementation
 function noise(x: number) {
@@ -113,3 +114,19 @@ export function normalizeDeviceSpace(vector: Vector3, width: number, height: num
         v = new Vector2(0, 0);
     return v;
 };
+
+export function noiseCurveMesh(color = new Color(0xffffff), opacity = 1, complexity = 0.02, amplitude = 250): [Mesh, number[]] {
+    const geometry = new MeshLineGeometry();
+    let phase = Math.random() * 1000;
+    let curve = generateFlowingCurve2D(400, complexity, amplitude, phase, .01);
+
+    geometry.setPoints(curve);
+    const res = new Vector2(window.innerWidth, window.innerHeight);
+    const material = new MeshLineMaterial({ color: color, lineWidth: 0.01, dashArray: 0, dashRatio: 0.2, resolution: res, opacity: opacity });
+    material.transparent = true;
+    material.depthTest = false;
+    const mesh = new Mesh(geometry, material);
+    mesh.raycast = raycast;
+
+    return [mesh, curve];
+}

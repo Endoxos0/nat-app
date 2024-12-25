@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
     import "../app.css";
     import "katex/dist/katex.min.css";
-    import { init } from "./script";
+    import { init, symbols } from "./script";
     import { onMount, onDestroy } from "svelte";
     import katex from "katex";
 
@@ -10,7 +10,7 @@
     });
 </script>
 
-<div class="symbol equation" id="propertime">
+<div class="equation" id="propertime">
     {@html katex.renderToString("\\tau =0")}
 </div>
 <canvas id="canvas"> </canvas>
