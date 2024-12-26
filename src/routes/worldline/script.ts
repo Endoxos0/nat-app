@@ -160,8 +160,8 @@ export function init() {
 
     let gridcurveX = curveMesh({ samples: perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin }), color: 0x575757 });
     let gridcurveY = curveMesh({ samples: perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin }), color: 0x575757 });
-    scene.add(gridcurveX);
-    scene.add(gridcurveY);
+    // scene.add(gridcurveX);
+    // scene.add(gridcurveY);
 
     //#region User Parameter
     let w = 2;
@@ -169,8 +169,8 @@ export function init() {
     let b2 = perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin });
     let basis1Mesh = vectorMesh(parameterSphere.position, limitDifference(minimalDifference(parameterSphere.position, b1).curveIndex, b1).normalize().multiplyScalar(w), 0x808080);
     let basis2Mesh = vectorMesh(parameterSphere.position, limitDifference(minimalDifference(parameterSphere.position, b2).curveIndex, b2).normalize().multiplyScalar(-w), 0x808080);
-    // scene.add(basis1Mesh.group);
-    // scene.add(basis2Mesh.group);
+    scene.add(basis1Mesh.group);
+    scene.add(basis2Mesh.group);
     dragControls.addEventListener('drag', (event) => {
         gridcurveX.geometry.setPoints(perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin }));
         gridcurveY.geometry.setPoints(perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin }));
