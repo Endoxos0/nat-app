@@ -16,7 +16,7 @@
         energyImpulsTensor,
     } from "./math";
     import "katex/dist/katex.min.css";
-    import "./app.css";
+    import "$lib/app.css";
     const eq = katex.renderToString;
 </script>
 

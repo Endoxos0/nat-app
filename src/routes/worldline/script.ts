@@ -1,27 +1,32 @@
-import { OrthographicCamera, Scene, WebGLRenderer, DirectionalLight, Color, SphereGeometry, MeshBasicMaterial, Mesh, Material } from "three";
-import { Vector3 } from "three";
+import { Vector3, OrthographicCamera, Scene, WebGLRenderer, Color, SphereGeometry, MeshBasicMaterial, Mesh } from "three";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { MeshLineGeometry, MeshLineMaterial, raycast } from 'meshline';
-import { arbitraryNoiseGrid, findClosestPointOnCurve, generateFlowingCurve2D, generateFlowingCurve3D, noiseCurveMesh, normalizeDeviceSpace, splitArray } from "./curve";
 import { DragControls } from 'three/addons/controls/DragControls.js';
 import katex from "katex";
-import { tangentVector, vectorMesh } from "./line";
-import { VertexNormalsHelper } from "three/examples/jsm/Addons.js";
-import { perlinCurve, curveMesh, perlinSurface, Noise, perlinCurveP } from "./noise";
+import { perlinCurve, Noise, perlinCurveP, perlinCurveSampler } from "$lib/perlinNoise";
+import { findParameterForPoint, perlinGridLine, perlinGridLineP } from "$lib/gridBasisVectors";
+import { curveMesh, loopCurve, loopCurveP } from "$lib/curves";
+import { limitDifference, minimalDifference, normalizeDeviceSpace, vectorMesh } from "$lib/Vector";
 
 let camera: OrthographicCamera, scene: Scene, renderer: WebGLRenderer;
 const frustumSize = 50;
 
-let curve: number[];
 export const symbols: [HTMLDivElement, number][] = [];
 let n = 16;
 let I: number;
 let properTime: number;
 
+let s = 40;
+let shift = .5;
+let stretch = .1;
+let c = new Color("#2b2b2b");
+
+let symbolUpdate: () => void;
+let loop: (() => void)[] = [];
+
 export function init() {
+    //#region Camera Setup
     const canvas = document.getElementById("canvas") as HTMLCanvasElement;
     if (!canvas) return;
-
     const aspect = window.innerWidth / window.innerHeight;
     camera = new OrthographicCamera(frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, .1, 100);
     camera.position.set(
@@ -29,77 +34,75 @@ export function init() {
         6.920649464598646,
         6.7892308214349395
     );
-    // camera.position.setY(10);
+    camera.position.set(0, 10, 0);
     camera.zoom = 4.1;
     camera.updateProjectionMatrix();
     scene = new Scene();
+    const onWindowResize = () => {
+        const aspect = window.innerWidth / window.innerHeight;
+
+        camera.left = - frustumSize * aspect / 2;
+        camera.right = frustumSize * aspect / 2;
+        camera.top = frustumSize / 2;
+        camera.bottom = - frustumSize / 2;
+
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+    window.addEventListener('resize', onWindowResize);
+    //#endregion
 
     const dragControls = new DragControls([], camera, canvas);
 
-    const light = new DirectionalLight(0xffffff, 3);
-    light.position.set(1, 1, 1).normalize();
-    scene.add(light);
-
-    let [noiseLineMesh, Curve] = noiseCurveMesh();
-    curve = Curve;
-    scene.add(noiseLineMesh);
-
     let perlin = new Noise();
-    // scene.add(perlinSurface(perlin));
-    // let curvemesh = curveMesh({ samples: perlinCurve({ N: 30, delta: 0.1, perlin }) });
-    // scene.add(curvemesh);
+    //#region Generate Grid Lines
+    for (let i = -s; i < s; i++) {
+        let gridline = curveMesh({
+            samples: perlinCurve({
+                N: 30,
+                delta: 0.1,
+                ySample: stretch * i,
+                shift: shift * i,
+                perlin,
+            }),
+            color: c,
+            lineWidth: 0.005
+        });
+        scene.add(gridline);
 
+        let curvemeshP = curveMesh({
+            samples: perlinCurveP({
+                N: 30,
+                delta: 0.1,
+                ySample: stretch * i,
+                shift: shift * i,
+                perlin,
+            }),
+            color: c,
+            lineWidth: 0.005
+        });
+        scene.add(curvemeshP);
+    }
+    //#endregion
 
-    (() => {
-        const geometry = new SphereGeometry(.1, 32, 32);
-        const material = new MeshBasicMaterial({ color: 'red' });
-        const paraMesh = new Mesh(geometry, material);
-        scene.add(paraMesh);
-
-        let s = 40;
-        let shift = .5;
-        let f = .1;
-        let c = new Color("#2b2b2b");
-        let [axis1, axis2] = [2, -2];
-        for (let i = -s; i < s; i++) {
-            let curvemesh = curveMesh({ samples: perlinCurve({ N: 30, delta: 0.1, ySample: f * i, shift: shift * i, perlin, }), color: c, lineWidth: 0.005 });
-            scene.add(curvemesh);
-            let curvemeshP = curveMesh({ samples: perlinCurveP({ N: 30, delta: 0.1, ySample: f * i, shift: shift * i, perlin, }), color: c, lineWidth: 0.005 });
-            scene.add(curvemeshP);
-
-            // if (i == axis1) {
-            //     curvemesh.material.color = new Color("blue");
-            //     curvemesh.material.opacity = .4;
-            // }
-            // if (i == axis2) {
-            //     curvemeshP.material.color = new Color("blue");
-            //     curvemeshP.material.opacity = .4;
-            // }
-
-            // dragControls.addEventListener('drag', (event) => {
-            //     curvemesh.geometry.setPoints(perlinCurve({ N: 30, delta: 0.1, ySample: properTime * i, shift: shift * i, perlin, }));
-            //     curvemeshP.geometry.setPoints(perlinCurveP({ N: 30, delta: 0.1, ySample: properTime * i, shift: shift * i, perlin, }));
-            // });
-        }
-    })();
-    // dragControls.addEventListener('drag', (event) => {
-    //     curvemesh.geometry.setPoints(perlinCurve({ N: 100, delta: 0.1, ySample: properTime, perlin }));
-    // });
+    let worldLineMesh = curveMesh({ samples: perlinCurve({ N: 30, delta: 0.1, amplitude: 3 }) });
+    scene.add(worldLineMesh);
 
     //symbols
     (() => {
         let n = 16;
         let shift = 5;
-        I = Math.round(curve.length / (2 * 3 * n)) * (3 * n) - 3 * n * shift;
-        for (let i = 0; i < curve.length; i += 3 * n) {
+        I = Math.round(worldLineMesh.geometry.points.length / (2 * 3 * n)) * (3 * n) - 3 * n * shift;
+        for (let i = 0; i < worldLineMesh.geometry.points.length; i += 3 * n) {
             const geometry = new SphereGeometry(.1, 32, 32);
             const material = new MeshBasicMaterial({ color: 'white' });
             const mesh = new Mesh(geometry, material);
-            mesh.position.set(curve[i], curve[i + 1], curve[i + 2]);
+            mesh.position.set(worldLineMesh.geometry.points[i], worldLineMesh.geometry.points[i + 1], worldLineMesh.geometry.points[i + 2]);
             scene.add(mesh);
 
             camera.updateMatrixWorld(true);
-            let screenspace = normalizeDeviceSpace((new Vector3(curve[i], curve[i + 1], curve[i + 2])).project(camera), window.innerWidth, window.innerHeight);
+            let screenspace = normalizeDeviceSpace((new Vector3(worldLineMesh.geometry.points[i], worldLineMesh.geometry.points[i + 1], worldLineMesh.geometry.points[i + 2])).project(camera), window.innerWidth, window.innerHeight);
             var symbol: HTMLDivElement = document.createElement("div") as HTMLDivElement;
             symbol.style.position = "absolute";
             symbol.style.left = screenspace.x + 'px';
@@ -109,52 +112,79 @@ export function init() {
             symbol.className = "symbol";
             document.body.appendChild(symbol);
             symbols.push([symbol, i]);
+
+            symbolUpdate = () => {
+                for (let [symbol, i] of symbols) {
+                    camera.updateMatrixWorld(true);
+                    let screenspace = normalizeDeviceSpace((new Vector3(worldLineMesh.geometry.points[i], worldLineMesh.geometry.points[i + 1], worldLineMesh.geometry.points[i + 2])).project(camera), window.innerWidth, window.innerHeight);
+                    if (screenspace.x == 0)
+                        symbol.style.visibility = 'hidden';
+                    else
+                        symbol.style.visibility = 'visible';
+                    symbol.style.left = screenspace.x - 5.5 + 'px';
+                    symbol.style.top = screenspace.y - 30 + 'px';
+                }
+            };
         }
     })();
 
     //drag
-    (() => {
-        const geometry = new SphereGeometry(.1, 32, 32);
-        const material = new MeshBasicMaterial({ color: 'red' });
-        const dragMesh = new Mesh(geometry, material);
-        const hoverScale = 1.5;
-        const inverseHoverScale = 1 / hoverScale;
-        scene.add(dragMesh);
+    // const geometry = new SphereGeometry(.1, 32, 32);
+    // const material = new MeshBasicMaterial({ color: 'red' });
+    // const parameterSphere = new Mesh(geometry, material);
+    const parameterSphere = curveMesh({ samples: loopCurve({ radius: .25 }) });
+    scene.add(parameterSphere);
+    loop.push(() => {
+        // parameterSphere.lookAt(camera.position);
+    });
 
-        let tangentScale = 2;
-        let A = new Vector3(curve[I], curve[I + 1], curve[I + 2]);
-        let R = new Vector3(curve[I + 3] - curve[I], curve[I + 4] - curve[I + 1], curve[I + 5] - curve[I + 2]);
-        const TangentVector = vectorMesh(...tangentVector(A, R.normalize(), tangentScale));
-        scene.add(TangentVector.line);
-        scene.add(TangentVector.cone);
+    parameterSphere.position.set(worldLineMesh.geometry.points[I], worldLineMesh.geometry.points[I + 1], worldLineMesh.geometry.points[I + 2]);
+    dragControls.objects.push(parameterSphere);
 
-        dragMesh.position.set(curve[I], curve[I + 1], curve[I + 2]);
-        dragControls.objects.push(dragMesh);
-        dragControls.addEventListener('dragstart', (event) => {
-            controls.enabled = false;
-        });
-        dragControls.addEventListener('dragend', function (event) {
-            controls.enabled = true;
-        });
-        dragControls.addEventListener('drag', function (event) {
-            let closestPoint = findClosestPointOnCurve([event.object.position.x, event.object.position.y, event.object.position.z], curve);
-            event.object.position.set(...closestPoint.p);
-            let properTimeNode = (document.getElementById("propertime") as HTMLElement);
-            properTime = ((closestPoint.i - I) / (3 * n));
-            properTimeNode.innerHTML = katex.renderToString(`\\tau =${ properTime }`);
+    let tangentScale = 3;
+    let velocityMesh = vectorMesh(parameterSphere.position, limitDifference(I, worldLineMesh.geometry.points).normalize().multiplyScalar(tangentScale), 0x00FF00);
+    scene.add(velocityMesh.group);
 
-            let a = new Vector3(curve[closestPoint.i], curve[closestPoint.i + 1], curve[closestPoint.i + 2]);
-            let r = new Vector3(curve[closestPoint.i + 3] - curve[closestPoint.i], curve[closestPoint.i + 4] - curve[closestPoint.i + 1], curve[closestPoint.i + 5] - curve[closestPoint.i + 2]);
-            TangentVector.parameterChange(...tangentVector(a, r.normalize(), tangentScale));
-        });
-        dragControls.addEventListener('hoveron', function (event) {
-            dragMesh.geometry.scale(hoverScale, hoverScale, hoverScale);
-        });
-        dragControls.addEventListener('hoveroff', function (event) {
+    dragControls.addEventListener('drag', function (event) {
+        let { minV, curveIndex } = minimalDifference(parameterSphere.position, worldLineMesh.geometry.points);
+        event.object.position.add(minV);
 
-            dragMesh.geometry.scale(inverseHoverScale, inverseHoverScale, inverseHoverScale);
-        });
-    })();
+        let properTimeNode = (document.getElementById("propertime") as HTMLElement);
+        properTime = ((curveIndex - I) / (3 * n));
+        properTimeNode.innerHTML = katex.renderToString(`\\tau =${ properTime }`);
+
+        velocityMesh.parameterChange(parameterSphere.position, limitDifference(curveIndex, worldLineMesh.geometry.points).normalize().multiplyScalar(tangentScale));
+    });
+
+    let gridcurveX = curveMesh({ samples: perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin }) });
+    let gridcurveY = curveMesh({ samples: perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin }) });
+    // scene.add(gridcurveX);
+    // scene.add(gridcurveY);
+
+    //#region User Parameter
+    let w = 2;
+    let basis1Mesh = vectorMesh(parameterSphere.position, limitDifference(I, perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin })).normalize().multiplyScalar(w), 0x808080);
+    let basis2Mesh = vectorMesh(parameterSphere.position, limitDifference(I, perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin })).normalize().multiplyScalar(-w), 0x808080);
+    scene.add(basis1Mesh.group);
+    scene.add(basis2Mesh.group);
+    dragControls.addEventListener('drag', (event) => {
+        gridcurveX.geometry.setPoints(perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin }));
+        gridcurveY.geometry.setPoints(perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin }));
+
+        let { minV, curveIndex } = minimalDifference(parameterSphere.position, worldLineMesh.geometry.points);
+        velocityMesh.parameterChange(parameterSphere.position, limitDifference(curveIndex, worldLineMesh.geometry.points).normalize().multiplyScalar(tangentScale));
+        basis1Mesh.parameterChange(parameterSphere.position, limitDifference(curveIndex, perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin })).normalize().multiplyScalar(w));
+        basis2Mesh.parameterChange(parameterSphere.position, limitDifference(curveIndex, perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin })).normalize().multiplyScalar(-w));
+    });
+
+    dragControls.addEventListener('dragstart', (event) => controls.enabled = false);
+    dragControls.addEventListener('dragend', (event) => controls.enabled = true);
+
+    const hoverScale = 1.5;
+    const inverseHoverScale = 1 / hoverScale;
+    dragControls.addEventListener('hoveron', (event) => parameterSphere.geometry.scale(hoverScale, hoverScale, hoverScale));
+    dragControls.addEventListener('hoveroff', (event) => parameterSphere.geometry.scale(inverseHoverScale, inverseHoverScale, inverseHoverScale));
+    //#endregion
 
     renderer = new WebGLRenderer({ canvas, antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -167,44 +197,15 @@ export function init() {
     controls.enableZoom = true;
     controls.rotateSpeed = 1;
 
-    window.addEventListener('resize', onWindowResize);
-}
-
-function onWindowResize() {
-    const aspect = window.innerWidth / window.innerHeight;
-
-    camera.left = - frustumSize * aspect / 2;
-    camera.right = frustumSize * aspect / 2;
-    camera.top = frustumSize / 2;
-    camera.bottom = - frustumSize / 2;
-
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 function render() {
-
-    // camera.position.x = radius * Math.sin(THREE.MathUtils.degToRad(theta));
-    // camera.position.y = radius * Math.sin(THREE.MathUtils.degToRad(theta));
-    // camera.position.z = radius * Math.cos(THREE.MathUtils.degToRad(theta));
-    // camera.lookAt(scene.position);
-
     // console.log([...camera.position]);
 
     for (let el of document.getElementsByClassName("symbol"))
         (el as HTMLDivElement).style.visibility = "hidden";
-
-    for (let [symbol, i] of symbols) {
-        camera.updateMatrixWorld(true);
-        let screenspace = normalizeDeviceSpace((new Vector3(curve[i], curve[i + 1], curve[i + 2])).project(camera), window.innerWidth, window.innerHeight);
-        if (screenspace.x == 0)
-            symbol.style.visibility = 'hidden';
-        else
-            symbol.style.visibility = 'visible';
-        symbol.style.left = screenspace.x - 5.5 + 'px';
-        symbol.style.top = screenspace.y - 30 + 'px';
-    }
+    symbolUpdate();
+    loop.forEach((fn) => fn());
 
     renderer.render(scene, camera);
 }

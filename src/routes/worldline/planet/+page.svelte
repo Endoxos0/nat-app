@@ -1,5 +1,5 @@
 <script lang="ts">
-    import "$lib/app.css";
+    import "./planet.css";
     import "katex/dist/katex.min.css";
     import { init, symbols } from "./script";
     import { onMount, onDestroy } from "svelte";
@@ -11,6 +11,8 @@
 </script>
 
 <div class="equation" id="propertime">
-    {@html katex.renderToString("\\tau =0")}
+    {@html katex.renderToString(
+        "\\frac{de_{\\alpha}}{d{\\tau}} = \\Gamma_{\\alpha\\beta}^{\\gamma}v^{\\beta}e_{\\gamma}",
+    )}
 </div>
 <canvas id="canvas"> </canvas>

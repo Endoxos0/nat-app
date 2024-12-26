@@ -1,0 +1,89 @@
+html {
+    background-color: black;
+    color: white;
+    font-family: "Noto Sans", serif;
+}
+
+.container {
+    margin-top: 1em;
+}
+
+.half {
+    padding-left: 1em;
+    width: 50vw;
+}
+
+.righthalf {
+    position: absolute;
+    padding: 2em;
+    padding-top: 0;
+    right: 1em;
+    width: 40vw;
+}
+
+iframe {
+    margin-top: 1em;
+    width: 40vw;
+    height: 20em;
+}
+
+html,
+body {
+    margin: 0;
+}
+
+canvas {
+    position: absolute;
+    margin: 0;
+    display: block;
+}
+
+h1 {
+    font-weight: 900;
+    font-size: 3vw;
+    margin: 0;
+}
+
+h2 {
+    font-weight: 700;
+    font-size: 3vw;
+    margin: 0;
+}
+
+h3 {
+    font-weight: 700;
+    font-size: 2vw;
+    margin: 0;
+}
+
+p,
+ul {
+    font-weight: 450;
+    font-size: 1vw;
+    margin: 0;
+    margin-bottom: 2em;
+}
+
+.katex-html {
+    font-size: 1vw;
+}
+
+.symbol {
+    z-index: 1;
+    position: absolute;
+    user-select: none;
+    pointer-events: none;
+}
+
+.symbol .katex-html {
+    font-size: 1em;
+}
+
+.equation .katex-html {
+    font-size: 1.5em;
+    margin: 1em;
+    z-index: 1;
+    position: absolute;
+    user-select: none;
+    pointer-events: none;
+}

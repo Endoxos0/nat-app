@@ -1,7 +1,7 @@
-import { Color, Vector2 } from "three";
+import { Color, Group, Vector2, Vector3 } from "three";
 import { PlaneGeometry, MeshPhongMaterial, DoubleSide, Mesh } from "three";
 import { MeshLineGeometry, MeshLineMaterial, raycast } from 'meshline';
-import * as THREE from 'three';
+import { SphereGeometry, MeshBasicMaterial, WireframeGeometry, LineSegments } from 'three';
 
 export class Noise {
     p: Uint8Array<ArrayBuffer>;
@@ -20,22 +20,22 @@ export class Noise {
         }
     }
 
-    fade(t) {
+    fade(t: number) {
         return t * t * t * (t * (t * 6 - 15) + 10);
     }
 
-    lerp(t, a, b) {
+    lerp(t: number, a: number, b: number) {
         return a + t * (b - a);
     }
 
-    grad(hash, x, y, z) {
+    grad(hash: number, x: number, y: number, z: number) {
         const h = hash & 15;
         const u = h < 8 ? x : y;
         const v = h < 4 ? y : h === 12 || h === 14 ? x : z;
         return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
     }
 
-    noise(x, y, z) {
+    noise(x: number, y: number, z: number) {
         const X = Math.floor(x) & 255;
         const Y = Math.floor(y) & 255;
         const Z = Math.floor(z) & 255;
@@ -80,43 +80,34 @@ export class Noise {
     }
 }
 
-export function perlinCurve({ N, delta, ySample = 0, shift = 0, perlin = new Noise() }: { N: number, delta: number, ySample?: number, shift?: number, perlin?: Noise; }) {
+export function perlinCurveSampler({ x, ySample, shift, amplitude = 1, perlin }: { x: number, ySample: number, shift: number, amplitude?: number, perlin: Noise; }) {
+    return shift + amplitude * perlin.noise(0.1 * x, ySample, 0);
+}
+
+export function perlinCurve({ N, delta = 0.01, ySample = 0, shift = 0, perlin = new Noise(), amplitude = 1 }: { N: number, delta?: number, ySample?: number, shift?: number, amplitude?: number, perlin?: Noise; }) {
     const samples: number[] = [];
 
-    for (let I = -N; I < N; I += delta) {
+    for (let i = -N; i < N; i += delta) {
         samples.push(
-            I,
+            i,
             0,
-            shift + perlin.noise(0.2 * I, ySample, 0),
+            perlinCurveSampler({ x: i, ySample, shift, amplitude, perlin }),
         );
     }
     return samples;
 }
 
-export function perlinCurveP({ N, delta, ySample = 0, shift = 0, perlin = new Noise() }: { N: number, delta: number, ySample?: number, shift?: number, perlin?: Noise; }) {
+export function perlinCurveP({ N, delta = 0.01, ySample = 0, shift = 0, perlin = new Noise(), amplitude = 1 }: { N: number, delta?: number, ySample?: number, shift?: number, perlin?: Noise, amplitude?: number; }) {
     const samples: number[] = [];
 
-    for (let I = -N; I < N; I += delta) {
+    for (let i = -N; i < N; i += delta) {
         samples.push(
-            shift + perlin.noise(0.2 * I, ySample, 0),
+            perlinCurveSampler({ x: i, ySample, shift, amplitude, perlin }),
             0,
-            I,
+            i,
         );
     }
     return samples;
-}
-
-
-export function curveMesh({ samples, color = new Color('white'), opacity = 1, lineWidth = 0.01 }: { samples: number[], color?: Color, opacity?: number, lineWidth?: number; }) {
-    const geometry = new MeshLineGeometry();
-    geometry.setPoints(samples);
-    const res = new Vector2(window.innerWidth, window.innerHeight);
-    const material = new MeshLineMaterial({ color: color, lineWidth: lineWidth, dashArray: 0, dashRatio: 0.2, resolution: res, opacity: opacity });
-    material.transparent = true;
-    material.depthTest = false;
-    const mesh = new Mesh(geometry, material);
-    mesh.raycast = raycast;
-    return mesh;
 }
 
 export function perlinSurface(perlin: Noise = new Noise()) {
@@ -145,12 +136,12 @@ export function perlinSurface(perlin: Noise = new Noise()) {
     let s = .2;
     mesh.scale.set(s, s, s);
 
-    const wireframe = new THREE.WireframeGeometry((geometry));
+    const wireframe = new WireframeGeometry((geometry));
 
-    const line = new THREE.LineSegments(wireframe);
-    line.material.depthTest = false;
-    line.material.opacity = 0.25;
-    line.material.transparent = true;
+    const line = new LineSegments(wireframe);
+    // line.material.depthTest = false;
+    // line.material.opacity = 0.25;
+    // line.material.transparent = true;
 
     line.rotation.x = -Math.PI / 2;
     // line.scale.set(s, s, s);
