@@ -1,7 +1,7 @@
 <script>
     import * as math from "../math";
     import "katex/dist/katex.min.css";
-    import "../app.css";
+    import "$lib/app.css";
     const arr = Object.keys(math).map((key) => math[key]);
 </script>
 
