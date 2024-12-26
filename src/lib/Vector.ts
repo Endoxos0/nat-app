@@ -1,5 +1,6 @@
 import { MeshLineGeometry, MeshLineMaterial, raycast } from 'meshline';
 import { Vector2, Vector3, Color, Mesh, ConeGeometry, MeshBasicMaterial, Quaternion, Group } from 'three';
+import { symbolOf } from './symbol';
 
 export function normalizeDeviceSpace(vector: Vector3, width: number, height: number): Vector2 {
     var v = new Vector2((vector.x + 1) * width / 2, - (vector.y - 1) * height / 2);
@@ -76,10 +77,10 @@ export function findClosestPoint(point: Vector3, curve: number[] | Float32Array<
 }
 
 
-export function vectorMesh(s: Vector3, r: Vector3, color: number = 0xFF0000) {
+export function vectorMesh(s: Vector3, r: Vector3, color: number = 0xFF0000, c: string = 'v') {
     const group = new Group();
     const geometry = new MeshLineGeometry();
-    geometry.setPoints([...s, ...s.clone().add(r.clone().multiplyScalar(.25)), ...s.clone().add(r.clone().multiplyScalar(.5)), ...s.clone().add(r.clone().multiplyScalar(.75)), ...s.clone().add(r)]);
+    geometry.setPoints([...s, ...s.clone().add(r)]);
     const res = new Vector2(window.innerWidth, window.innerHeight);
     const material = new MeshLineMaterial({ color: color, lineWidth: 0.01, dashArray: 0, dashRatio: 0.2, resolution: res });
     const mesh = new Mesh(geometry, material);
@@ -98,14 +99,24 @@ export function vectorMesh(s: Vector3, r: Vector3, color: number = 0xFF0000) {
     group.add(cone);
     group.position.setY(.1);
 
+    const offsetScale = .4;
+    const offset: Vector3 = r.clone().normalize().multiplyScalar(offsetScale);
+    const symbol = symbolOf({ c });
+    symbol.rotateX(-Math.PI / 2);
+    symbol.position.set(geometry.points[3] + offset.x, geometry.points[4] + offset.y, geometry.points[5] + offset.z);
+    group.add(symbol);
+
     const parameterChange = (s: Vector3, r: Vector3) => {
-        geometry.setPoints([...s, ...s.clone().add(r.clone().multiplyScalar(.25)), ...s.clone().add(r.clone().multiplyScalar(.5)), ...s.clone().add(r.clone().multiplyScalar(.75)), ...s.clone().add(r)]);
+        geometry.setPoints([...s, ...s.clone().add(r)]);
         cone.position.copy(s.clone().add(r));
 
         const quaternion = new Quaternion();
         const start = new Vector3(0, 1, 0);
         quaternion.setFromUnitVectors(start, r.clone().normalize());
         cone.setRotationFromQuaternion(quaternion);
+
+        const offset: Vector3 = r.clone().normalize().multiplyScalar(offsetScale);
+        symbol.position.set(geometry.points[3] + offset.x, geometry.points[4] + offset.y, geometry.points[5] + offset.z);
     };
 
     return { group, parameterChange: parameterChange };

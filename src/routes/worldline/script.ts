@@ -136,7 +136,7 @@ export function init() {
     parameterSphere.position.set(worldLineMesh.geometry.points[I], worldLineMesh.geometry.points[I + 1], worldLineMesh.geometry.points[I + 2]);
     dragControls.objects.push(parameterSphere);
 
-    let tangentScale = 3;
+    let tangentScale = 5;
     let velocityMesh = vectorMesh(parameterSphere.position, limitDifference(I, worldLineMesh.geometry.points).normalize().multiplyScalar(tangentScale), 0x00FF00);
     scene.add(velocityMesh.group);
 
@@ -158,11 +158,11 @@ export function init() {
     // scene.add(gridcurveY);
 
     //#region User Parameter
-    let w = 2;
+    let w = 3;
     let b1 = perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin });
     let b2 = perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin });
-    let basis1Mesh = vectorMesh(parameterSphere.position, limitDifference(minimalDifference(parameterSphere.position, b1).curveIndex, b1).normalize().multiplyScalar(w), 0x808080);
-    let basis2Mesh = vectorMesh(parameterSphere.position, limitDifference(minimalDifference(parameterSphere.position, b2).curveIndex, b2).normalize().multiplyScalar(-w), 0x808080);
+    let basis1Mesh = vectorMesh(parameterSphere.position, limitDifference(minimalDifference(parameterSphere.position, b1).curveIndex, b1).normalize().multiplyScalar(w), 0x808080, "e_1");
+    let basis2Mesh = vectorMesh(parameterSphere.position, limitDifference(minimalDifference(parameterSphere.position, b2).curveIndex, b2).normalize().multiplyScalar(-w), 0x808080, "e_2");
     scene.add(basis1Mesh.group);
     scene.add(basis2Mesh.group);
     dragControls.addEventListener('drag', (event) => {
