@@ -86,7 +86,7 @@ export function init() {
     }
     //#endregion
 
-    let worldLineMesh = curveMesh({ samples: perlinCurve({ N: 30, delta: 0.1, amplitude: 7 }) });
+    let worldLineMesh = curveMesh({ samples: perlinCurve({ N: 30, delta: 0.1, amplitude: 1 }) });
     scene.add(worldLineMesh);
 
     //symbols

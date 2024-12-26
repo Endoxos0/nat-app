@@ -81,7 +81,7 @@ export class Noise {
 }
 
 export function perlinCurveSampler({ x, ySample, shift, amplitude = 1, perlin }: { x: number, ySample: number, shift: number, amplitude?: number, perlin: Noise; }) {
-    return shift + amplitude * perlin.noise(0.1 * x, ySample, 0);
+    return shift + amplitude * perlin.noise(0.3 * x, ySample, 0);
 }
 
 export function perlinCurve({ N, delta = 0.01, ySample = 0, shift = 0, perlin = new Noise(), amplitude = 1 }: { N: number, delta?: number, ySample?: number, shift?: number, amplitude?: number, perlin?: Noise; }) {
