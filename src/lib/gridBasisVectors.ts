@@ -46,7 +46,7 @@ export function perlinGridLine({ P, shift, stretch, perlin }: { P: Vector3; shif
         (x, q) => perlinCurveSampler({ x, ySample: stretch * q, shift: shift * q, perlin }),
         P.x,
         P.z, -50, 50, 1e-10, 10000) as number;
-    return perlinCurve({ N: 30, delta: 0.1, ySample: stretch * S, shift: shift * S, perlin, });
+    return perlinCurve({ N: 20, delta: 0.01, ySample: stretch * S, shift: shift * S, perlin, });
 }
 
 
@@ -55,6 +55,6 @@ export function perlinGridLineP({ P, shift, stretch, perlin }: { P: Vector3; shi
         (x, q) => perlinCurveSampler({ x, ySample: stretch * q, shift: shift * q, perlin }),
         P.z,
         P.x, -50, 50, 1e-10, 10000) as number;
-    return perlinCurveP({ N: 30, delta: 0.1, ySample: stretch * S, shift: shift * S, perlin, });
+    return perlinCurveP({ N: 20, delta: 0.01, ySample: stretch * S, shift: shift * S, perlin, });
 }
 

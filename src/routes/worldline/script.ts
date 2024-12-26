@@ -133,6 +133,7 @@ export function init() {
     // const material = new MeshBasicMaterial({ color: 'red' });
     // const parameterSphere = new Mesh(geometry, material);
     const parameterSphere = curveMesh({ samples: loopCurve({ radius: .25 }) });
+    parameterSphere.position.setY(.05);
     scene.add(parameterSphere);
     loop.push(() => {
         // parameterSphere.lookAt(camera.position);
@@ -147,7 +148,8 @@ export function init() {
 
     dragControls.addEventListener('drag', function (event) {
         let { minV, curveIndex } = minimalDifference(parameterSphere.position, worldLineMesh.geometry.points);
-        event.object.position.add(minV);
+        parameterSphere.position.add(minV);
+        parameterSphere.position.setY(.05);
 
         let properTimeNode = (document.getElementById("propertime") as HTMLElement);
         properTime = ((curveIndex - I) / (3 * n));
@@ -156,25 +158,40 @@ export function init() {
         velocityMesh.parameterChange(parameterSphere.position, limitDifference(curveIndex, worldLineMesh.geometry.points).normalize().multiplyScalar(tangentScale));
     });
 
-    let gridcurveX = curveMesh({ samples: perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin }) });
-    let gridcurveY = curveMesh({ samples: perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin }) });
-    // scene.add(gridcurveX);
-    // scene.add(gridcurveY);
+    let gridcurveX = curveMesh({ samples: perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin }), color: 0x575757 });
+    let gridcurveY = curveMesh({ samples: perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin }), color: 0x575757 });
+    scene.add(gridcurveX);
+    scene.add(gridcurveY);
 
     //#region User Parameter
     let w = 2;
-    let basis1Mesh = vectorMesh(parameterSphere.position, limitDifference(I, perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin })).normalize().multiplyScalar(w), 0x808080);
-    let basis2Mesh = vectorMesh(parameterSphere.position, limitDifference(I, perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin })).normalize().multiplyScalar(-w), 0x808080);
-    scene.add(basis1Mesh.group);
-    scene.add(basis2Mesh.group);
+    let b1 = perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin });
+    let b2 = perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin });
+    let basis1Mesh = vectorMesh(parameterSphere.position, limitDifference(minimalDifference(parameterSphere.position, b1).curveIndex, b1).normalize().multiplyScalar(w), 0x808080);
+    let basis2Mesh = vectorMesh(parameterSphere.position, limitDifference(minimalDifference(parameterSphere.position, b2).curveIndex, b2).normalize().multiplyScalar(-w), 0x808080);
+    // scene.add(basis1Mesh.group);
+    // scene.add(basis2Mesh.group);
     dragControls.addEventListener('drag', (event) => {
         gridcurveX.geometry.setPoints(perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin }));
         gridcurveY.geometry.setPoints(perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin }));
 
-        let { minV, curveIndex } = minimalDifference(parameterSphere.position, worldLineMesh.geometry.points);
-        velocityMesh.parameterChange(parameterSphere.position, limitDifference(curveIndex, worldLineMesh.geometry.points).normalize().multiplyScalar(tangentScale));
-        basis1Mesh.parameterChange(parameterSphere.position, limitDifference(curveIndex, perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin })).normalize().multiplyScalar(w));
-        basis2Mesh.parameterChange(parameterSphere.position, limitDifference(curveIndex, perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin })).normalize().multiplyScalar(-w));
+        velocityMesh.parameterChange(
+            parameterSphere.position,
+            limitDifference(minimalDifference(parameterSphere.position, worldLineMesh.geometry.points).curveIndex,
+                worldLineMesh.geometry.points).normalize().multiplyScalar(tangentScale));
+
+        b1 = perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin });
+        b2 = perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin });
+        basis1Mesh.parameterChange(
+            parameterSphere.position,
+            limitDifference(
+                minimalDifference(parameterSphere.position, b1).curveIndex,
+                b1).normalize().multiplyScalar(w));
+        basis2Mesh.parameterChange(
+            parameterSphere.position,
+            limitDifference(
+                minimalDifference(parameterSphere.position, b2).curveIndex,
+                b2).normalize().multiplyScalar(-w));
     });
 
     dragControls.addEventListener('dragstart', (event) => controls.enabled = false);
