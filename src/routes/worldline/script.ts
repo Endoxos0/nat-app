@@ -1,39 +1,43 @@
-import { Vector3, OrthographicCamera, Scene, WebGLRenderer, Color, SphereGeometry, MeshBasicMaterial, Mesh } from "three";
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { DragControls } from 'three/addons/controls/DragControls.js';
-import katex from "katex";
-import { perlinCurve, Noise, perlinCurveP, perlinCurveSampler } from "$lib/perlinNoise";
-import { findParameterForPoint, perlinGridLine, perlinGridLineP } from "$lib/gridBasisVectors";
-import { curveMesh, loopCurve, loopCurveP } from "$lib/curves";
-import { limitDifference, minimalDifference, normalizeDeviceSpace, vectorMesh } from "$lib/Vector";
+import { OrthographicCamera, Scene, WebGLRenderer, Color, PCFSoftShadowMap, SphereGeometry, MeshBasicMaterial, Mesh, Vector3 } from "three";
+import katex, { render } from "katex";
+import { perlinCurve, Noise, perlinCurveP } from "$lib/perlinNoise";
+import { perlinGridLine, perlinGridLineP } from "$lib/gridBasisVectors";
+import { curveMesh, loopCurve } from "$lib/curves";
+import { limitDifference, minimalDifference, vectorMesh } from "$lib/Vector";
+import { CSS3DObject, CSS3DRenderer, OrbitControls, DragControls } from "three/examples/jsm/Addons.js";
+import { symbolOf } from "$lib/symbol";
 
-let camera: OrthographicCamera, scene: Scene, renderer: WebGLRenderer;
-const frustumSize = 50;
-
-export const symbols: [HTMLDivElement, number][] = [];
-let n = 16;
-let I: number;
-let properTime: number;
-
-
-let symbolUpdate: () => void;
-let loop: (() => void)[] = [];
+let camera: OrthographicCamera, scene: Scene, rendererGl: WebGLRenderer, rendererCss: CSS3DRenderer;
+let controlsGl: OrbitControls;
 
 export function init() {
     //#region Camera Setup
-    const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-    if (!canvas) return;
     const aspect = window.innerWidth / window.innerHeight;
+    const frustumSize = 50;
     camera = new OrthographicCamera(frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, .1, 100);
-    camera.position.set(
-        -2.4517250746012427,
-        6.920649464598646,
-        6.7892308214349395
-    );
     camera.position.set(0, 10, 0);
     camera.zoom = 4.1;
     camera.updateProjectionMatrix();
+    camera.position.set(-2.4517250746012427, 6.920649464598646, 6.7892308214349395);
+
     scene = new Scene();
+
+    rendererCss = new CSS3DRenderer();
+    rendererCss.setSize(window.innerWidth, window.innerHeight);
+    (document.querySelector('#css') as HTMLDivElement).appendChild(rendererCss.domElement);
+
+    rendererGl = new WebGLRenderer({ antialias: true, alpha: true });
+    rendererGl.setClearColor(0x000000, 0.0);
+    rendererGl.setSize(window.innerWidth, window.innerHeight);
+    rendererGl.setPixelRatio(window.devicePixelRatio);
+    rendererGl.setAnimationLoop(animate);
+    rendererGl.shadowMap.enabled = true;
+    rendererGl.shadowMap.type = PCFSoftShadowMap; // default THREE.PCFShadowMap
+    (document.querySelector('#webgl') as HTMLDivElement).appendChild(rendererGl.domElement);
+
+    controlsGl = new OrbitControls(camera, rendererGl.domElement);
+    new OrbitControls(camera, rendererCss.domElement);
+
     const onWindowResize = () => {
         const aspect = window.innerWidth / window.innerHeight;
 
@@ -44,12 +48,17 @@ export function init() {
 
         camera.updateProjectionMatrix();
 
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        rendererGl.setSize(window.innerWidth, window.innerHeight);
+        rendererCss.setSize(window.innerWidth, window.innerHeight);
     };
     window.addEventListener('resize', onWindowResize);
     //#endregion
 
-    const dragControls = new DragControls([], camera, canvas);
+    const dragControls = new DragControls([], camera, rendererGl.domElement);
+
+    let n = 16;
+    let I: number;
+    let properTime: number;
 
     let perlin = new Noise();
     //#region Generate Grid Lines
@@ -89,44 +98,32 @@ export function init() {
     let worldLineMesh = curveMesh({ samples: perlinCurve({ N: 30, delta: 0.1, amplitude: 1 }) });
     scene.add(worldLineMesh);
 
-    //symbols
-    (() => {
-        let n = 16;
-        let shift = 5;
-        I = Math.round(worldLineMesh.geometry.points.length / (2 * 3 * n)) * (3 * n) - 3 * n * shift;
-        for (let i = 0; i < worldLineMesh.geometry.points.length; i += 3 * n) {
-            const geometry = new SphereGeometry(.1, 32, 32);
-            const material = new MeshBasicMaterial({ color: 'white' });
-            const mesh = new Mesh(geometry, material);
-            mesh.position.set(worldLineMesh.geometry.points[i], worldLineMesh.geometry.points[i + 1], worldLineMesh.geometry.points[i + 2]);
-            scene.add(mesh);
+    //#region symbols
+    let symbolShift = 5;
+    I = Math.round(worldLineMesh.geometry.points.length / (2 * 3 * n)) * (3 * n) - 3 * n * symbolShift;
 
-            camera.updateMatrixWorld(true);
-            let screenspace = normalizeDeviceSpace((new Vector3(worldLineMesh.geometry.points[i], worldLineMesh.geometry.points[i + 1], worldLineMesh.geometry.points[i + 2])).project(camera), window.innerWidth, window.innerHeight);
-            var symbol: HTMLDivElement = document.createElement("div") as HTMLDivElement;
-            symbol.style.position = "absolute";
-            symbol.style.left = screenspace.x + 'px';
-            symbol.style.top = screenspace.y + 'px';
-            symbol.id = ((i - I) / (3 * n)).toString();
-            symbol.innerHTML = katex.renderToString(`${ symbol.id }`);
-            symbol.className = "symbol";
-            document.body.appendChild(symbol);
-            symbols.push([symbol, i]);
+    var xpos = [50, -10, 30, 70, 110];
+    var ypos = [60, -40, 0, 40, 80];
+    var zpos = [-30, -50, 0, 50, 100];
 
-            symbolUpdate = () => {
-                for (let [symbol, i] of symbols) {
-                    camera.updateMatrixWorld(true);
-                    let screenspace = normalizeDeviceSpace((new Vector3(worldLineMesh.geometry.points[i], worldLineMesh.geometry.points[i + 1], worldLineMesh.geometry.points[i + 2])).project(camera), window.innerWidth, window.innerHeight);
-                    if (screenspace.x == 0)
-                        symbol.style.visibility = 'hidden';
-                    else
-                        symbol.style.visibility = 'visible';
-                    symbol.style.left = screenspace.x - 5.5 + 'px';
-                    symbol.style.top = screenspace.y - 30 + 'px';
-                }
-            };
-        }
-    })();
+    for (let i = 0; i < worldLineMesh.geometry.points.length; i += 3 * n) {
+        const point: Vector3 = new Vector3(worldLineMesh.geometry.points[i], worldLineMesh.geometry.points[i + 1], worldLineMesh.geometry.points[i + 2]);
+        const offset: Vector3 = new Vector3(0, 0, -.5);
+
+        const geometry = new SphereGeometry(.1, 32, 32);
+        const material = new MeshBasicMaterial({ color: 'white' });
+        const mesh = new Mesh(geometry, material);
+        mesh.position.set(point.x, point.y, point.z);
+        scene.add(mesh);
+
+        point.add(offset);
+        let s = symbolOf({ c: ((i - I) / (3 * n)).toString() });
+        s.rotateX(-Math.PI / 2);
+        s.position.set(point.x, point.y, point.z);
+        // camera.updateMatrixWorld();
+        // s.lookAt(camera.position);
+        scene.add(s);
+    }
 
     //drag
     // const geometry = new SphereGeometry(.1, 32, 32);
@@ -135,9 +132,6 @@ export function init() {
     const parameterSphere = curveMesh({ samples: loopCurve({ radius: .25 }) });
     parameterSphere.position.setY(.05);
     scene.add(parameterSphere);
-    loop.push(() => {
-        // parameterSphere.lookAt(camera.position);
-    });
 
     parameterSphere.position.set(worldLineMesh.geometry.points[I], worldLineMesh.geometry.points[I + 1], worldLineMesh.geometry.points[I + 2]);
     dragControls.objects.push(parameterSphere);
@@ -194,35 +188,18 @@ export function init() {
                 b2).normalize().multiplyScalar(-w));
     });
 
-    dragControls.addEventListener('dragstart', (event) => controls.enabled = false);
-    dragControls.addEventListener('dragend', (event) => controls.enabled = true);
+    dragControls.addEventListener('dragstart', (event) => controlsGl.enabled = false);
+    dragControls.addEventListener('dragend', (event) => controlsGl.enabled = true);
 
     const hoverScale = 1.5;
     const inverseHoverScale = 1 / hoverScale;
     dragControls.addEventListener('hoveron', (event) => parameterSphere.geometry.scale(hoverScale, hoverScale, hoverScale));
     dragControls.addEventListener('hoveroff', (event) => parameterSphere.geometry.scale(inverseHoverScale, inverseHoverScale, inverseHoverScale));
     //#endregion
-
-    renderer = new WebGLRenderer({ canvas, antialias: true });
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setAnimationLoop(render);
-
-    const controls = new OrbitControls(camera, canvas);
-    controls.enableDamping = false;
-    controls.enablePan = false;
-    controls.enableZoom = true;
-    controls.rotateSpeed = 1;
-
 }
 
-function render() {
-    // console.log([...camera.position]);
-
-    for (let el of document.getElementsByClassName("symbol"))
-        (el as HTMLDivElement).style.visibility = "hidden";
-    symbolUpdate();
-    loop.forEach((fn) => fn());
-
-    renderer.render(scene, camera);
+export function animate() {
+    controlsGl.update();
+    rendererGl.render(scene, camera);
+    rendererCss.render(scene, camera);
 }

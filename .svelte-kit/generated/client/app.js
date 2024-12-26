@@ -7,17 +7,19 @@ export const nodes = [
 	() => import('./nodes/3'),
 	() => import('./nodes/4'),
 	() => import('./nodes/5'),
-	() => import('./nodes/6')
+	() => import('./nodes/6'),
+	() => import('./nodes/7')
 ];
 
 export const server_loads = [];
 
 export const dictionary = {
 		"/": [2],
-		"/eqs": [3],
-		"/three": [4],
-		"/worldline": [5],
-		"/worldline/planet": [6]
+		"/css3d": [3],
+		"/eqs": [4],
+		"/three": [5],
+		"/worldline": [6],
+		"/worldline/planet": [7]
 	};
 
 export const hooks = {
