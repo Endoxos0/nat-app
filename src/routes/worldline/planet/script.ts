@@ -1,7 +1,7 @@
 import { OrthographicCamera, Scene, WebGLRenderer, DirectionalLight } from "three";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { DragControls } from 'three/addons/controls/DragControls.js';
-import { loopCurve, curveMesh, orbWireframe, sphere } from "../../../lib/perlinNoise";
+import { orbWireframe, sphere } from "$lib/curves";
 
 let camera: OrthographicCamera, scene: Scene, renderer: WebGLRenderer;
 const frustumSize = 50;

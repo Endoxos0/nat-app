@@ -15,10 +15,6 @@ let n = 16;
 let I: number;
 let properTime: number;
 
-let s = 40;
-let shift = .5;
-let stretch = .1;
-let c = new Color("#2b2b2b");
 
 let symbolUpdate: () => void;
 let loop: (() => void)[] = [];
@@ -57,6 +53,10 @@ export function init() {
 
     let perlin = new Noise();
     //#region Generate Grid Lines
+    let s = 40;
+    let shift = .5;
+    let stretch = .1;
+    let c = new Color("#2b2b2b");
     for (let i = -s; i < s; i++) {
         let gridline = curveMesh({
             samples: perlinCurve({
@@ -86,7 +86,7 @@ export function init() {
     }
     //#endregion
 
-    let worldLineMesh = curveMesh({ samples: perlinCurve({ N: 30, delta: 0.1, amplitude: 3 }) });
+    let worldLineMesh = curveMesh({ samples: perlinCurve({ N: 30, delta: 0.1, amplitude: 7 }) });
     scene.add(worldLineMesh);
 
     //symbols
