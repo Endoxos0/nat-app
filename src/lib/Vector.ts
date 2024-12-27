@@ -1,5 +1,5 @@
 import { MeshLineGeometry, MeshLineMaterial, raycast } from 'meshline';
-import { Vector2, Vector3, Color, Mesh, ConeGeometry, MeshBasicMaterial, Quaternion, Group } from 'three';
+import { Vector2, Vector3, Color, Mesh, ConeGeometry, MeshBasicMaterial, Quaternion, Group, Matrix3, Matrix2 } from 'three';
 import { symbolOf } from './symbol';
 
 export function normalizeDeviceSpace(vector: Vector3, width: number, height: number): Vector2 {
@@ -76,19 +76,19 @@ export function findClosestPoint(point: Vector3, curve: number[] | Float32Array<
     return { point: closestPoint, curveIndex: closestIndex };
 }
 
-
 export function vectorMesh(s: Vector3, r: Vector3, color: number = 0xFF0000, c: string = 'v') {
     const group = new Group();
     const geometry = new MeshLineGeometry();
     geometry.setPoints([...s, ...s.clone().add(r)]);
     const res = new Vector2(window.innerWidth, window.innerHeight);
-    const material = new MeshLineMaterial({ color: color, lineWidth: 0.01, dashArray: 0, dashRatio: 0.2, resolution: res });
+    const material = new MeshLineMaterial({ color: color, lineWidth: 0.01, dashArray: 0, dashRatio: 0.2, resolution: res, opacity: .8 });
+    material.transparent = true;
     const mesh = new Mesh(geometry, material);
     mesh.raycast = raycast;
     group.add(mesh);
 
     const coneGeometry = new ConeGeometry(.09, .3, 32);
-    const coneMaterial = new MeshBasicMaterial({ color: color });
+    const coneMaterial = new MeshBasicMaterial({ color: color, transparent: true, opacity: .8 });
     const cone = new Mesh(coneGeometry, coneMaterial);
     cone.position.copy(s.clone().add(r));
 
@@ -124,4 +124,13 @@ export function vectorMesh(s: Vector3, r: Vector3, color: number = 0xFF0000, c: 
 
 export function limitDifference(i: number, curve: number[] | Float32Array<ArrayBufferLike>): Vector3 {
     return new Vector3(curve[i + 3] - curve[i], curve[i + 4] - curve[i + 1], curve[i + 5] - curve[i + 2]);
+}
+
+export function decompose(v: Vector3, e0 = new Vector3(1, 0, 0), e1 = new Vector3(0, 1, 0), e2 = new Vector3(0, 0, 1)) {
+    let M = new Matrix3(
+        e0.x, e1.x, e2.x,
+        e0.y, e1.y, e2.y,
+        e0.z, e1.z, e2.z,
+    );
+    return v.clone().applyMatrix3(M.invert());
 }

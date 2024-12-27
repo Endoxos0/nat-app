@@ -9,6 +9,10 @@
         init();
         // animate();
     });
+
+    onDestroy(() => {
+        console.clear();
+    });
 </script>
 
 <div class="equation" id="propertime">

@@ -1,9 +1,9 @@
 import { OrthographicCamera, Scene, WebGLRenderer, Color, PCFSoftShadowMap, SphereGeometry, MeshBasicMaterial, Mesh, Vector3 } from "three";
 import katex, { render } from "katex";
-import { perlinCurve, Noise, perlinCurveP } from "$lib/perlinNoise";
+import { perlinCurve, Noise, perlinCurveP, perlinCurveRising } from "$lib/perlinNoise";
 import { perlinGridLine, perlinGridLineP } from "$lib/gridBasisVectors";
 import { curveMesh, loopCurve } from "$lib/curves";
-import { limitDifference, minimalDifference, vectorMesh } from "$lib/Vector";
+import { decompose, limitDifference, minimalDifference, vectorMesh } from "$lib/Vector";
 import { CSS3DObject, CSS3DRenderer, OrbitControls, DragControls } from "three/examples/jsm/Addons.js";
 import { symbolOf } from "$lib/symbol";
 
@@ -95,7 +95,7 @@ export function init() {
     }
     //#endregion
 
-    let worldLineMesh = curveMesh({ samples: perlinCurve({ N: 30, delta: 0.1, amplitude: 1 }) });
+    let worldLineMesh = curveMesh({ samples: perlinCurveRising({ N: 30, delta: 0.1, amplitude: 2 }) });
     scene.add(worldLineMesh);
 
     //#region symbols
@@ -136,9 +136,6 @@ export function init() {
     parameterSphere.position.set(worldLineMesh.geometry.points[I], worldLineMesh.geometry.points[I + 1], worldLineMesh.geometry.points[I + 2]);
     dragControls.objects.push(parameterSphere);
 
-    let tangentScale = 5;
-    let velocityMesh = vectorMesh(parameterSphere.position, limitDifference(I, worldLineMesh.geometry.points).normalize().multiplyScalar(tangentScale), 0x00FF00);
-    scene.add(velocityMesh.group);
 
     dragControls.addEventListener('drag', function (event) {
         let { minV, curveIndex } = minimalDifference(parameterSphere.position, worldLineMesh.geometry.points);
@@ -148,8 +145,6 @@ export function init() {
         let properTimeNode = (document.getElementById("propertime") as HTMLElement);
         properTime = ((curveIndex - I) / (3 * n));
         properTimeNode.innerHTML = katex.renderToString(`\\tau =${ properTime }`);
-
-        velocityMesh.parameterChange(parameterSphere.position, limitDifference(curveIndex, worldLineMesh.geometry.points).normalize().multiplyScalar(tangentScale));
     });
 
     let gridcurveX = curveMesh({ samples: perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin }), color: 0x575757 });
@@ -158,34 +153,47 @@ export function init() {
     // scene.add(gridcurveY);
 
     //#region User Parameter
-    let w = 3;
-    let b1 = perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin });
-    let b2 = perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin });
-    let basis1Mesh = vectorMesh(parameterSphere.position, limitDifference(minimalDifference(parameterSphere.position, b1).curveIndex, b1).normalize().multiplyScalar(w), 0x808080, "e_1");
-    let basis2Mesh = vectorMesh(parameterSphere.position, limitDifference(minimalDifference(parameterSphere.position, b2).curveIndex, b2).normalize().multiplyScalar(-w), 0x808080, "e_2");
-    scene.add(basis1Mesh.group);
-    scene.add(basis2Mesh.group);
+    let tangentScale = 5;
+    let coord1 = perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin });
+    let coord2 = perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin });
+    let v = limitDifference(I, worldLineMesh.geometry.points).normalize().multiplyScalar(tangentScale);
+    let e0 = limitDifference(minimalDifference(parameterSphere.position, coord1).curveIndex, coord1).normalize();
+    let e1 = limitDifference(minimalDifference(parameterSphere.position, coord2).curveIndex, coord2).normalize().multiplyScalar(-1);
+    let ve = decompose(v, e0, undefined, e1);
+    let v0e0 = e0.clone().multiplyScalar(ve.x);
+    let v1e1 = e1.clone().multiplyScalar(ve.z);;
+    let vMesh = vectorMesh(parameterSphere.position, v, 0x00FF00);
+    let e0Mesh = vectorMesh(parameterSphere.position, e0, 0x808080, "e_0");
+    let e1Mesh = vectorMesh(parameterSphere.position, e1, 0x808080, "e_1");
+    let v0e0Mesh = vectorMesh(parameterSphere.position, v0e0, 0x808080, "v^0e_0");
+    let v1e1Mesh = vectorMesh(parameterSphere.position, v1e1, 0x808080, "v^1e_1");
+    scene.add(e0Mesh.group);
+    scene.add(e1Mesh.group);
+    scene.add(v0e0Mesh.group);
+    scene.add(v1e1Mesh.group);
+    scene.add(vMesh.group);
     dragControls.addEventListener('drag', (event) => {
         gridcurveX.geometry.setPoints(perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin }));
         gridcurveY.geometry.setPoints(perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin }));
 
-        velocityMesh.parameterChange(
-            parameterSphere.position,
-            limitDifference(minimalDifference(parameterSphere.position, worldLineMesh.geometry.points).curveIndex,
-                worldLineMesh.geometry.points).normalize().multiplyScalar(tangentScale));
+        v = limitDifference(minimalDifference(parameterSphere.position, worldLineMesh.geometry.points).curveIndex,
+            worldLineMesh.geometry.points).normalize().multiplyScalar(tangentScale);
+        vMesh.parameterChange(parameterSphere.position, v);
 
-        b1 = perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin });
-        b2 = perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin });
-        basis1Mesh.parameterChange(
-            parameterSphere.position,
-            limitDifference(
-                minimalDifference(parameterSphere.position, b1).curveIndex,
-                b1).normalize().multiplyScalar(w));
-        basis2Mesh.parameterChange(
-            parameterSphere.position,
-            limitDifference(
-                minimalDifference(parameterSphere.position, b2).curveIndex,
-                b2).normalize().multiplyScalar(-w));
+        coord1 = perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin });
+        coord2 = perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin });
+        e0 = limitDifference(minimalDifference(parameterSphere.position, coord1).curveIndex, coord1).normalize();
+        e1 = limitDifference(minimalDifference(parameterSphere.position, coord2).curveIndex, coord2).normalize().multiplyScalar(-1);
+        e0Mesh.parameterChange(parameterSphere.position, e0);
+        e1Mesh.parameterChange(parameterSphere.position, e1);
+
+        ve = decompose(v, e0, undefined, e1);
+        v0e0 = e0.clone().multiplyScalar(ve.x);
+        v1e1 = e1.clone().multiplyScalar(ve.z);;
+        v0e0Mesh.parameterChange(parameterSphere.position, v0e0);
+        v1e1Mesh.parameterChange(parameterSphere.position, v1e1);
+
+        // console.log(decompose(v, e0, undefined, e1));
     });
 
     dragControls.addEventListener('dragstart', (event) => controlsGl.enabled = false);

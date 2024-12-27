@@ -97,6 +97,20 @@ export function perlinCurve({ N, delta = 0.01, ySample = 0, shift = 0, perlin = 
     return samples;
 }
 
+export function perlinCurveRising({ N, delta = 0.01, ySample = 0, shift = 0, perlin = new Noise(), amplitude = 1, rise: slope = .3 }: { N: number, delta?: number, ySample?: number, shift?: number, amplitude?: number, perlin?: Noise, rise?: number; }) {
+    const samples: number[] = [];
+
+    for (let i = -N; i < N; i += delta) {
+        samples.push(
+            i,
+            0,
+            perlinCurveSampler({ x: i, ySample, shift, amplitude, perlin }) - slope * i,
+        );
+    }
+    return samples;
+}
+
+
 export function perlinCurveP({ N, delta = 0.01, ySample = 0, shift = 0, perlin = new Noise(), amplitude = 1 }: { N: number, delta?: number, ySample?: number, shift?: number, perlin?: Noise, amplitude?: number; }) {
     const samples: number[] = [];
 
