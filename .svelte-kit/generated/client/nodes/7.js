@@ -1,1 +1,1 @@
-export { default as component } from "../../../../src/routes/worldline/planet/+page.svelte";
+export { default as component } from "../../../../src/routes/line/+page.svelte";

@@ -1,8 +1,8 @@
-import { OrthographicCamera, Scene, WebGLRenderer, Color, PCFSoftShadowMap, SphereGeometry, MeshBasicMaterial, Mesh, Vector3 } from "three";
+import { OrthographicCamera, Scene, WebGLRenderer, Color, PCFSoftShadowMap, SphereGeometry, MeshBasicMaterial, Mesh, Vector3, TubeGeometry } from "three";
 import katex, { render } from "katex";
 import { perlinCurve, Noise, perlinCurveP, perlinCurveRising } from "$lib/perlinNoise";
 import { perlinGridLine, perlinGridLineP } from "$lib/gridBasisVectors";
-import { curveMesh, loopCurve } from "$lib/curves";
+import { curveMesh, loopCurve, PerlinCurve } from "$lib/curves";
 import { decompose, limitDifference, minimalDifference, vectorMesh } from "$lib/Vector";
 import { CSS3DObject, CSS3DRenderer, OrbitControls, DragControls } from "three/examples/jsm/Addons.js";
 import { symbolOf } from "$lib/symbol";
@@ -102,10 +102,6 @@ export function init() {
     let symbolShift = 5;
     I = Math.round(worldLineMesh.geometry.points.length / (2 * 3 * n)) * (3 * n) - 3 * n * symbolShift;
 
-    var xpos = [50, -10, 30, 70, 110];
-    var ypos = [60, -40, 0, 40, 80];
-    var zpos = [-30, -50, 0, 50, 100];
-
     for (let i = 0; i < worldLineMesh.geometry.points.length; i += 3 * n) {
         const point: Vector3 = new Vector3(worldLineMesh.geometry.points[i], worldLineMesh.geometry.points[i + 1], worldLineMesh.geometry.points[i + 2]);
         const offset: Vector3 = new Vector3(0, 0, -.5);
@@ -163,10 +159,10 @@ export function init() {
     let v0e0 = e0.clone().multiplyScalar(ve.x);
     let v1e1 = e1.clone().multiplyScalar(ve.z);;
     let vMesh = vectorMesh(parameterSphere.position, v, 0x00FF00);
-    let e0Mesh = vectorMesh(parameterSphere.position, e0, 0x808080, "e_0");
-    let e1Mesh = vectorMesh(parameterSphere.position, e1, 0x808080, "e_1");
-    let v0e0Mesh = vectorMesh(parameterSphere.position, v0e0, 0x808080, "v^0e_0");
-    let v1e1Mesh = vectorMesh(parameterSphere.position, v1e1, 0x808080, "v^1e_1");
+    let e0Mesh = vectorMesh(parameterSphere.position, e0, 0x808080, "\\overrightarrow{e_0}");
+    let e1Mesh = vectorMesh(parameterSphere.position, e1, 0x808080, "\\overrightarrow{e_1}");
+    let v0e0Mesh = vectorMesh(parameterSphere.position, v0e0, 0x808080, "v^0\\overrightarrow{e_0}");
+    let v1e1Mesh = vectorMesh(parameterSphere.position, v1e1, 0x808080, "v^1\\overrightarrow{e_1}");
     scene.add(e0Mesh.group);
     scene.add(e1Mesh.group);
     scene.add(v0e0Mesh.group);
@@ -192,8 +188,6 @@ export function init() {
         v1e1 = e1.clone().multiplyScalar(ve.z);;
         v0e0Mesh.parameterChange(parameterSphere.position, v0e0);
         v1e1Mesh.parameterChange(parameterSphere.position, v1e1);
-
-        // console.log(decompose(v, e0, undefined, e1));
     });
 
     dragControls.addEventListener('dragstart', (event) => controlsGl.enabled = false);

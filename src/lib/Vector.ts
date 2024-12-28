@@ -76,12 +76,12 @@ export function findClosestPoint(point: Vector3, curve: number[] | Float32Array<
     return { point: closestPoint, curveIndex: closestIndex };
 }
 
-export function vectorMesh(s: Vector3, r: Vector3, color: number = 0xFF0000, c: string = 'v') {
+export function vectorMesh(s: Vector3, r: Vector3, color: number = 0xFF0000, c: string = '\\overrightarrow{v}') {
     const group = new Group();
     const geometry = new MeshLineGeometry();
     geometry.setPoints([...s, ...s.clone().add(r)]);
     const res = new Vector2(window.innerWidth, window.innerHeight);
-    const material = new MeshLineMaterial({ color: color, lineWidth: 0.01, dashArray: 0, dashRatio: 0.2, resolution: res, opacity: .8 });
+    const material = new MeshLineMaterial({ color: color, lineWidth: 0.015, dashArray: 0, dashRatio: 0.2, resolution: res, opacity: .8 });
     material.transparent = true;
     const mesh = new Mesh(geometry, material);
     mesh.raycast = raycast;

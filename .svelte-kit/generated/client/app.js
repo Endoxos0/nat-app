@@ -8,18 +8,24 @@ export const nodes = [
 	() => import('./nodes/4'),
 	() => import('./nodes/5'),
 	() => import('./nodes/6'),
-	() => import('./nodes/7')
+	() => import('./nodes/7'),
+	() => import('./nodes/8'),
+	() => import('./nodes/9'),
+	() => import('./nodes/10')
 ];
 
 export const server_loads = [];
 
 export const dictionary = {
 		"/": [2],
-		"/css3d": [3],
-		"/eqs": [4],
-		"/three": [5],
-		"/worldline": [6],
-		"/worldline/planet": [7]
+		"/christoffel": [3],
+		"/css3d": [4],
+		"/curve": [5],
+		"/eqs": [6],
+		"/line": [7],
+		"/three": [8],
+		"/worldline": [9],
+		"/worldline/planet": [10]
 	};
 
 export const hooks = {

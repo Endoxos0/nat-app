@@ -73,7 +73,7 @@ function render() {
     // camera.position.z = radius * Math.cos(THREE.MathUtils.degToRad(theta));
     // camera.lookAt(scene.position);
 
-    console.log([...camera.position]);
+    // console.log([...camera.position]);
 
     // for (let el of document.getElementsByClassName("symbol"))
     //     (el as HTMLDivElement).style.visibility = "hidden";

@@ -1,1 +1,1 @@
-export { default as component } from "../../../../src/routes/css3d/+page.svelte";
+export { default as component } from "../../../../src/routes/christoffel/+page.svelte";
