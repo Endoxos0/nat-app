@@ -1,6 +1,7 @@
 import { MeshLineGeometry, MeshLineMaterial, raycast } from "meshline";
-import { Group, SphereGeometry, MeshBasicMaterial, Mesh, Color, Vector2, Vector3, Curve, Matrix3 } from "three";
+import { Group, SphereGeometry, MeshBasicMaterial, Mesh, Color, Vector2, Vector3, Curve, Matrix3, Matrix2 } from "three";
 import { Noise, perlinCurveSampler } from "./perlinNoise";
+import { findParameterForPoint } from "./gridBasisVectors";
 
 export function loopCurve({ radius, shift = 0, delta = 0.01 }: { delta?: number, radius: number, shift?: number; }) {
     const samples: number[] = [];
@@ -151,12 +152,12 @@ export class CircleCurve extends Curve<Vector3> {
 }
 
 export function closestPointToPoint<TCurve extends Curve<Vector3>>(point: Vector3, curve: TCurve, delta = 0.01): [Vector3, number] {
-    let closestPoint: Vector3 = curve.getPoint(0);
+    let closestPoint: Vector3 = curve.getPointAt(0);
     let mint = Infinity;
     let minDistance = Infinity;
 
     for (let i = 0; i < 1; i += delta) {
-        const curvePoint: Vector3 = curve.getPoint(i);
+        const curvePoint: Vector3 = curve.getPointAt(i);
         const distance = point.distanceTo(curvePoint);
         if (distance < minDistance) {
             mint = i;
@@ -167,3 +168,75 @@ export function closestPointToPoint<TCurve extends Curve<Vector3>>(point: Vector
 
     return [closestPoint, mint];
 };
+
+export class PerlinCurveAtPoint extends Curve<Vector3> {
+    perlin: Noise;
+    private _point: Vector3;
+    public get point(): Vector3 {
+        return this._point;
+    }
+    public set point(point: Vector3) {
+        this.s = findParameterForPoint(
+            (x, q) => perlinCurveSampler({ x, ySample: this.stretch * q, shift: this.shift * q, perlin: this.perlin }),
+            new Vector2(point.x, point.z).rotateAround(new Vector2(), this.theta), -50, 50, 1e-10, 10000) as number;
+        this._point = point;
+    }
+    amplitude: number | undefined;
+    scale: number;
+    start: number;
+    stretch: number;
+    theta: number;
+    end: number;
+    shift: number;
+    s: number;
+
+    constructor({ point, amplitude = 1, stretch, shift, scale = 1, start = 0, end = 1, perlin = new Noise(), theta = 0 }: { point: Vector3, amplitude?: number, shift: number, scale?: number, stretch: number, start?: number, end?: number, theta?: number, perlin?: Noise; }) {
+        super();
+        this._point = point;
+        this.amplitude = amplitude;
+        this.scale = scale;
+        this.stretch = stretch;
+        this.start = start;
+        this.shift = shift;
+        this.end = end;
+        this.theta = theta;
+        this.perlin = perlin;
+
+        this.s = findParameterForPoint(
+            (x, q) => perlinCurveSampler({ x, ySample: this.stretch * q, shift: this.shift * q, perlin: this.perlin }),
+            new Vector2(point.x, point.z).rotateAround(new Vector2(), this.theta), -50, 50, 1e-10, 10000) as number;
+    }
+
+    getPoint(t: number, optionalTarget = new Vector3()) {
+        t = this.start + t * (this.end - this.start);
+        const tx = t;
+        const ty = 0;
+        const tz = perlinCurveSampler({ x: t, ySample: this.stretch * this.s, shift: this.shift * this.s, amplitude: this.amplitude, perlin: this.perlin });
+
+        const R = new Matrix3(
+            Math.cos(this.theta), 0, Math.sin(this.theta),
+            0, 1, 0,
+            -Math.sin(this.theta), 0, Math.cos(this.theta));
+        return optionalTarget.set(tx, ty, tz).applyMatrix3(R).multiplyScalar(this.scale);
+    }
+}
+
+export class PerlinCurveRising extends PerlinCurve {
+    constructor({ ySample = 0, shift = 0, amplitude = 1, scale = 1, start = 0, end = 1, perlin = new Noise(), theta = 0 }: { ySample?: number, shift?: number, amplitude?: number, scale?: number, start?: number, end?: number, theta?: number, perlin?: Noise; }) {
+        super({
+            ySample,
+            shift,
+            amplitude,
+            scale,
+            start,
+            end,
+            theta,
+            perlin
+        });
+    }
+
+    getPoint(t: number, optionalTarget = new Vector3()) {
+        return super.getPoint(t, optionalTarget).add(new Vector3(0, 0, - .1 * (this.start + t * (this.end - this.start))));
+    }
+}
+

@@ -2,24 +2,24 @@ import { OrthographicCamera, Scene, WebGLRenderer, Color, PCFSoftShadowMap, Sphe
 import katex, { render } from "katex";
 import { perlinCurve, Noise, perlinCurveP, perlinCurveRising } from "$lib/perlinNoise";
 import { perlinGridLine, perlinGridLineP } from "$lib/gridBasisVectors";
-import { curveMesh, loopCurve, PerlinCurve } from "$lib/curves";
-import { decompose, limitDifference, minimalDifference, vectorMesh } from "$lib/Vector";
+import { CircleCurve, closestPointToPoint, curveMesh, loopCurve, PerlinCurve, PerlinCurveAtPoint, PerlinCurveRising } from "$lib/curves";
+import { decompose, limitDifference, minimalDifference, Vector, vectorMesh } from "$lib/Vector";
 import { CSS3DObject, CSS3DRenderer, OrbitControls, DragControls } from "three/examples/jsm/Addons.js";
 import { symbolOf } from "$lib/symbol";
+import { CircleParameterPointer } from "$lib/parameter";
 
 let camera: OrthographicCamera, scene: Scene, rendererGl: WebGLRenderer, rendererCss: CSS3DRenderer;
 let controlsGl: OrbitControls;
 
 export function init() {
-    //#region Camera Setup
+    //#region Scene Setup
     const aspect = window.innerWidth / window.innerHeight;
     const frustumSize = 50;
     camera = new OrthographicCamera(frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, .1, 100);
     camera.position.set(0, 10, 0);
     camera.zoom = 4.1;
     camera.updateProjectionMatrix();
-    camera.position.set(-2.4517250746012427, 6.920649464598646, 6.7892308214349395);
-
+    // camera.position.set(-2.4517250746012427, 6.920649464598646, 6.7892308214349395);
     scene = new Scene();
 
     rendererCss = new CSS3DRenderer();
@@ -55,149 +55,106 @@ export function init() {
     //#endregion
 
     const dragControls = new DragControls([], camera, rendererGl.domElement);
-
-    let n = 16;
-    let I: number;
-    let properTime: number;
+    dragControls.addEventListener('dragstart', (event) => controlsGl.enabled = false);
+    dragControls.addEventListener('dragend', (event) => controlsGl.enabled = true);
+    const hoverScale = 1.5;
+    dragControls.addEventListener('hoveron', (event) => event.object.scale.multiplyScalar(hoverScale));
+    dragControls.addEventListener('hoveroff', (event) => event.object.scale.divideScalar(hoverScale));
+    const mat0 = new MeshBasicMaterial({ color: 0xFFFFFF });
+    const mat1 = new MeshBasicMaterial({ color: 0x2B2B2B });
 
     let perlin = new Noise();
-    //#region Generate Grid Lines
-    let s = 40;
-    let shift = .5;
+    let gridSize = 40;
+    let coord_shift = .5;
     let stretch = .1;
-    let c = new Color("#2b2b2b");
-    for (let i = -s; i < s; i++) {
-        let gridline = curveMesh({
-            samples: perlinCurve({
-                N: 30,
-                delta: 0.1,
-                ySample: stretch * i,
-                shift: shift * i,
-                perlin,
-            }),
-            color: c,
-            lineWidth: 0.005
-        });
-        scene.add(gridline);
-
-        let curvemeshP = curveMesh({
-            samples: perlinCurveP({
-                N: 30,
-                delta: 0.1,
-                ySample: stretch * i,
-                shift: shift * i,
-                perlin,
-            }),
-            color: c,
-            lineWidth: 0.005
-        });
-        scene.add(curvemeshP);
+    for (let i = -gridSize; i < gridSize; i++) {
+        const x0 = new PerlinCurve({ start: -20, end: 20, ySample: stretch * i, shift: coord_shift * i, perlin });
+        const x0_geometry = new TubeGeometry(x0, 1000, 0.01, 15, false);
+        const x0_mesh = new Mesh(x0_geometry, mat1);
+        scene.add(x0_mesh);
+        const x1 = new PerlinCurve({ start: -20, end: 20, ySample: stretch * i, shift: coord_shift * i, perlin, theta: Math.PI / 2 });
+        const x1_geometry = new TubeGeometry(x1, 1000, 0.01, 15, false);
+        const x1_mesh = new Mesh(x1_geometry, mat1);
+        scene.add(x1_mesh);
     }
-    //#endregion
 
-    let worldLineMesh = curveMesh({ samples: perlinCurveRising({ N: 30, delta: 0.1, amplitude: 2 }) });
-    scene.add(worldLineMesh);
+    const path = new PerlinCurve({ amplitude: 4, start: -20, end: 20 });
+    const curve_geometry = new TubeGeometry(path, 1000, 0.01, 15, false);
+    const mesh = new Mesh(curve_geometry, mat0);
+    scene.add(mesh);
 
-    //#region symbols
-    let symbolShift = 5;
-    I = Math.round(worldLineMesh.geometry.points.length / (2 * 3 * n)) * (3 * n) - 3 * n * symbolShift;
-
-    for (let i = 0; i < worldLineMesh.geometry.points.length; i += 3 * n) {
-        const point: Vector3 = new Vector3(worldLineMesh.geometry.points[i], worldLineMesh.geometry.points[i + 1], worldLineMesh.geometry.points[i + 2]);
-        const offset: Vector3 = new Vector3(0, 0, -.5);
+    let interval = [-5, 10];
+    let N = Math.abs(interval[0]) + Math.abs(interval[1]);
+    for (let i = interval[0]; i <= interval[1]; i++) {
+        const point = path.getPointAt((i + Math.abs(interval[0])) / N);
+        const offset = new Vector3(0, 0, -.5);
 
         const geometry = new SphereGeometry(.1, 32, 32);
         const material = new MeshBasicMaterial({ color: 'white' });
         const mesh = new Mesh(geometry, material);
-        mesh.position.set(point.x, point.y, point.z);
+        mesh.position.copy(point);
         scene.add(mesh);
 
         point.add(offset);
-        let s = symbolOf({ c: ((i - I) / (3 * n)).toString() });
-        s.rotateX(-Math.PI / 2);
-        s.position.set(point.x, point.y, point.z);
-        // camera.updateMatrixWorld();
-        // s.lookAt(camera.position);
-        scene.add(s);
+        let symbol = symbolOf({ c: (i).toString() });
+        symbol.rotateX(-Math.PI / 2);
+        symbol.position.copy(point);
+        scene.add(symbol);
     }
 
-    //drag
-    // const geometry = new SphereGeometry(.1, 32, 32);
-    // const material = new MeshBasicMaterial({ color: 'red' });
-    // const parameterSphere = new Mesh(geometry, material);
-    const parameterSphere = curveMesh({ samples: loopCurve({ radius: .25 }) });
-    parameterSphere.position.setY(.05);
-    scene.add(parameterSphere);
-
-    parameterSphere.position.set(worldLineMesh.geometry.points[I], worldLineMesh.geometry.points[I + 1], worldLineMesh.geometry.points[I + 2]);
+    let properTime: number = 0;
+    let properTimeNode = (document.getElementById("propertime") as HTMLElement);
+    let T = Math.abs(interval[0]) / N;
+    const parameterSphere = CircleParameterPointer(.25);
     dragControls.objects.push(parameterSphere);
-
-
+    parameterSphere.position.copy(path.getPointAt(T));
+    scene.add(parameterSphere);
     dragControls.addEventListener('drag', function (event) {
-        let { minV, curveIndex } = minimalDifference(parameterSphere.position, worldLineMesh.geometry.points);
-        parameterSphere.position.add(minV);
-        parameterSphere.position.setY(.05);
-
-        let properTimeNode = (document.getElementById("propertime") as HTMLElement);
-        properTime = ((curveIndex - I) / (3 * n));
-        properTimeNode.innerHTML = katex.renderToString(`\\tau =${ properTime }`);
+        let [point, t] = closestPointToPoint(event.object.position, path, 0.0001);
+        T = t;
+        event.object.position.copy(point);
+        properTime = interval[0] + t * (interval[1] - interval[0]);
+        properTimeNode.innerHTML = katex.renderToString(`\\tau =${ properTime.toFixed(2) }`);
     });
 
-    let gridcurveX = curveMesh({ samples: perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin }), color: 0x575757 });
-    let gridcurveY = curveMesh({ samples: perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin }), color: 0x575757 });
-    // scene.add(gridcurveX);
-    // scene.add(gridcurveY);
-
-    //#region User Parameter
-    let tangentScale = 5;
-    let coord1 = perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin });
-    let coord2 = perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin });
-    let v = limitDifference(I, worldLineMesh.geometry.points).normalize().multiplyScalar(tangentScale);
-    let e0 = limitDifference(minimalDifference(parameterSphere.position, coord1).curveIndex, coord1).normalize();
-    let e1 = limitDifference(minimalDifference(parameterSphere.position, coord2).curveIndex, coord2).normalize().multiplyScalar(-1);
-    let ve = decompose(v, e0, undefined, e1);
-    let v0e0 = e0.clone().multiplyScalar(ve.x);
-    let v1e1 = e1.clone().multiplyScalar(ve.z);;
-    let vMesh = vectorMesh(parameterSphere.position, v, 0x00FF00);
-    let e0Mesh = vectorMesh(parameterSphere.position, e0, 0x808080, "\\overrightarrow{e_0}");
-    let e1Mesh = vectorMesh(parameterSphere.position, e1, 0x808080, "\\overrightarrow{e_1}");
-    let v0e0Mesh = vectorMesh(parameterSphere.position, v0e0, 0x808080, "v^0\\overrightarrow{e_0}");
-    let v1e1Mesh = vectorMesh(parameterSphere.position, v1e1, 0x808080, "v^1\\overrightarrow{e_1}");
-    scene.add(e0Mesh.group);
-    scene.add(e1Mesh.group);
-    scene.add(v0e0Mesh.group);
-    scene.add(v1e1Mesh.group);
-    scene.add(vMesh.group);
+    let x0 = new PerlinCurveAtPoint({ start: -20, end: 20, point: parameterSphere.position, stretch, shift: coord_shift, perlin });
+    let x1 = new PerlinCurveAtPoint({ start: -20, end: 20, point: parameterSphere.position, stretch, shift: coord_shift, perlin, theta: Math.PI / 2 });
+    const x0_geometry = new TubeGeometry(x0, 1000, 0.01, 15, false);
+    const x1_geometry = new TubeGeometry(x1, 1000, 0.01, 15, false);
+    const x0_mesh = new Mesh(x0_geometry, mat0);
+    const x1_mesh = new Mesh(x1_geometry, mat0);
+    x0_mesh.position.setY(.01);
+    x1_mesh.position.setY(.01);
+    // scene.add(x0_mesh);
+    // scene.add(x1_mesh);
+    let [P_e0, T_e0] = closestPointToPoint(parameterSphere.position, x0, 0.0001);
+    let [P_e1, T_e1] = closestPointToPoint(parameterSphere.position, x1, 0.0001);
+    let v = new Vector(parameterSphere.position, path.getTangentAt(T).normalize().multiplyScalar(4), '\\overrightarrow{v}', 0x00FF00);
+    let e0 = new Vector(parameterSphere.position, x0.getTangentAt(T_e0).normalize(), '\\overrightarrow{e_0}', 0x808080);
+    let e1 = new Vector(parameterSphere.position, x1.getTangentAt(T_e1).normalize(), '\\overrightarrow{e_1}', 0x808080);
+    let ve = decompose(v.vector, e0.vector, undefined, e1.vector);
+    let v0e0 = new Vector(parameterSphere.position, x0.getTangentAt(T_e0).normalize().multiplyScalar(ve.x), 'v^0\\overrightarrow{e_0}', 0x808080);
+    let v1e1 = new Vector(parameterSphere.position, x1.getTangentAt(T_e1).normalize().multiplyScalar(ve.z), 'v^1\\overrightarrow{e_1}', 0x808080);
+    scene.add(v);
+    scene.add(e0);
+    scene.add(e1);
+    scene.add(v0e0);
+    scene.add(v1e1);
     dragControls.addEventListener('drag', (event) => {
-        gridcurveX.geometry.setPoints(perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin }));
-        gridcurveY.geometry.setPoints(perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin }));
+        x0.point = event.object.position;
+        x1.point = event.object.position;
+        x0_mesh.geometry = new TubeGeometry(x0, 1000, 0.01, 15, false);
+        x1_mesh.geometry = new TubeGeometry(x1, 1000, 0.01, 15, false);
 
-        v = limitDifference(minimalDifference(parameterSphere.position, worldLineMesh.geometry.points).curveIndex,
-            worldLineMesh.geometry.points).normalize().multiplyScalar(tangentScale);
-        vMesh.parameterChange(parameterSphere.position, v);
-
-        coord1 = perlinGridLine({ P: parameterSphere.position, shift, stretch, perlin });
-        coord2 = perlinGridLineP({ P: parameterSphere.position, shift, stretch, perlin });
-        e0 = limitDifference(minimalDifference(parameterSphere.position, coord1).curveIndex, coord1).normalize();
-        e1 = limitDifference(minimalDifference(parameterSphere.position, coord2).curveIndex, coord2).normalize().multiplyScalar(-1);
-        e0Mesh.parameterChange(parameterSphere.position, e0);
-        e1Mesh.parameterChange(parameterSphere.position, e1);
-
-        ve = decompose(v, e0, undefined, e1);
-        v0e0 = e0.clone().multiplyScalar(ve.x);
-        v1e1 = e1.clone().multiplyScalar(ve.z);;
-        v0e0Mesh.parameterChange(parameterSphere.position, v0e0);
-        v1e1Mesh.parameterChange(parameterSphere.position, v1e1);
+        [P_e0, T_e0] = closestPointToPoint(parameterSphere.position, x0, 0.0001);
+        [P_e1, T_e1] = closestPointToPoint(parameterSphere.position, x1, 0.0001);
+        v.setVector(parameterSphere.position, path.getTangentAt(T).normalize().multiplyScalar(4));
+        e0.setVector(parameterSphere.position, x0.getTangentAt(T_e0).normalize());
+        e1.setVector(parameterSphere.position, x1.getTangentAt(T_e1).normalize());
+        ve = decompose(v.vector, e0.vector, undefined, e1.vector);
+        v0e0.setVector(parameterSphere.position, x0.getTangentAt(T_e0).normalize().multiplyScalar(ve.x));
+        v1e1.setVector(parameterSphere.position, x1.getTangentAt(T_e1).normalize().multiplyScalar(ve.z));
     });
-
-    dragControls.addEventListener('dragstart', (event) => controlsGl.enabled = false);
-    dragControls.addEventListener('dragend', (event) => controlsGl.enabled = true);
-
-    const hoverScale = 1.5;
-    const inverseHoverScale = 1 / hoverScale;
-    dragControls.addEventListener('hoveron', (event) => parameterSphere.geometry.scale(hoverScale, hoverScale, hoverScale));
-    dragControls.addEventListener('hoveroff', (event) => parameterSphere.geometry.scale(inverseHoverScale, inverseHoverScale, inverseHoverScale));
-    //#endregion
 }
 
 export function animate() {

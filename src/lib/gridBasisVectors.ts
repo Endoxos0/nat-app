@@ -1,4 +1,4 @@
-import type { Vector3 } from "three";
+import { Vector2, type Vector3 } from "three";
 import { Noise, perlinCurve, perlinCurveP, perlinCurveSampler } from "./perlinNoise";
 
 /**
@@ -14,13 +14,13 @@ import { Noise, perlinCurve, perlinCurveP, perlinCurveSampler } from "./perlinNo
  * @param {number} maxIterations - Maximum iterations (default: 1000)
  * @returns {number|null} Parameter q or null if no solution found
  */
-export function findParameterForPoint(f: (x: number, q: number) => number, px: number, py: number, qMin: number, qMax: number, tolerance = 1e-10, maxIterations = 1000) {
+export function findParameterForPoint(f: (x: number, q: number) => number, p: Vector2, qMin: number, qMax: number, tolerance = 1e-10, maxIterations = 1000) {
     let iterations = 0;
 
     while (iterations < maxIterations) {
         const qMid = (qMin + qMax) / 2;
-        const yAtMid = f(px, qMid);
-        const error = Math.abs(yAtMid - py);
+        const yAtMid = f(p.x, qMid);
+        const error = Math.abs(yAtMid - p.y);
 
         // Check if we found a solution within tolerance
         if (error <= tolerance) {
@@ -28,7 +28,7 @@ export function findParameterForPoint(f: (x: number, q: number) => number, px: n
         }
 
         // Adjust search interval based on whether we need to increase or decrease q
-        if (yAtMid < py) {
+        if (yAtMid < p.y) {
             qMin = qMid;
         } else {
             qMax = qMid;
@@ -41,20 +41,17 @@ export function findParameterForPoint(f: (x: number, q: number) => number, px: n
     return null;
 }
 
+
 export function perlinGridLine({ P, shift, stretch, perlin }: { P: Vector3; shift: number, stretch: number, perlin: Noise; }) {
     let S = findParameterForPoint(
         (x, q) => perlinCurveSampler({ x, ySample: stretch * q, shift: shift * q, perlin }),
-        P.x,
-        P.z, -50, 50, 1e-10, 10000) as number;
-    return perlinCurve({ N: 20, delta: 0.01, ySample: stretch * S, shift: shift * S, perlin, });
+        new Vector2(P.x, P.z), -50, 50, 1e-10, 10000) as number;
+    return perlinCurve({ N: 20, delta: 0.01, ySample: stretch * S, shift: shift * S, perlin });
 }
-
 
 export function perlinGridLineP({ P, shift, stretch, perlin }: { P: Vector3; shift: number, stretch: number, perlin: Noise; }) {
     let S = findParameterForPoint(
         (x, q) => perlinCurveSampler({ x, ySample: stretch * q, shift: shift * q, perlin }),
-        P.z,
-        P.x, -50, 50, 1e-10, 10000) as number;
-    return perlinCurveP({ N: 20, delta: 0.01, ySample: stretch * S, shift: shift * S, perlin, });
+        new Vector2(P.z, P.x), -50, 50, 1e-10, 10000) as number;
+    return perlinCurveP({ N: 20, delta: 0.01, ySample: stretch * S, shift: shift * S, perlin });
 }
-

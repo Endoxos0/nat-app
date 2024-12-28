@@ -16,7 +16,7 @@
 </script>
 
 <div class="equation" id="propertime">
-    {@html katex.renderToString("\\tau =0")}
+    {@html katex.renderToString(`\\tau = 0`)}
 </div>
 <div id="three">
     <div id="css"></div>
