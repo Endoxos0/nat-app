@@ -70,7 +70,7 @@
             aangeeft. Deze pijlen heten basisvectoren ({@html katex.renderToString(
                 "e_0, e_1",
             )}). Met deze twee basisvectoren kan je de snelheidsvector ontbinden
-            tot een som van hun veelvouden, een liniaire combinatie. oftewel {@html katex.renderToString(
+            tot een som van hun veelvouden, een liniaire combinatie. Oftewel {@html katex.renderToString(
                 "\\overrightarrow{v} = v^0\\overrightarrow{e_0} + v^1\\overrightarrow{e_1}",
             )}.
         </div>
