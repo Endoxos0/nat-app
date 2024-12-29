@@ -16,11 +16,11 @@
         energyImpulsTensor,
     } from "$lib/math";
     import "katex/dist/katex.min.css";
-    import "$lib/app.css";
+    import "$lib/index.css";
     const eq = katex.renderToString;
 </script>
 
-<div class="container">
+<div>
     <div class="righthalf">
         <h3>Overzicht + Geschiedenis:</h3>
         <h3>Donkere materie, Donkere energie</h3>

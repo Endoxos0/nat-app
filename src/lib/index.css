@@ -10,6 +10,7 @@ div {
 
 html {
     background-color: black;
+    overflow-x: hidden;
 }
 
 #css-renderer,
