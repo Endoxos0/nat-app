@@ -1,0 +1,62 @@
+* {
+    scrollbar-color: hsl(0, 0%, 67%) transparent;
+    scrollbar-width: thin;
+    color: white;
+}
+
+div {
+    font-family: "Noto Sans", serif;
+}
+
+html {
+    background-color: black;
+}
+
+#css-renderer,
+#webgl-renderer,
+.container {
+    position: absolute;
+    max-width: 100vw;
+    max-height: 100vh;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+.sidebar {
+    /* -webkit-mask-image: linear-gradient(to bottom, black 10%, transparent 80%);
+    mask-image: linear-gradient(to bottom, black 10%, transparent 80%); */
+    backdrop-filter: blur(1em);
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    position: absolute;
+    max-width: 35vw;
+    max-height: 100vh;
+    overflow-y: scroll;
+    padding-inline: .5em;
+    padding-top: .5em;
+    padding-right: 4em;
+    text-align: left;
+    direction: rtl;
+}
+
+.sidebar div {
+    direction: ltr
+}
+
+.paragraph {
+    margin-bottom: 1em;
+}
+
+.dynamic-value {
+    font-size: 1.5em;
+    padding: 1em;
+    z-index: 1;
+    position: absolute;
+    user-select: none;
+    pointer-events: none;
+    top: 0;
+    right: 0;
+}

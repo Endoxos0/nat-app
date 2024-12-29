@@ -1,5 +1,5 @@
-import { PerspectiveCamera, Scene, MeshBasicMaterial, DoubleSide, Color, PlaneGeometry, Mesh, Vector3, WebGLRenderer, BoxGeometry, Camera, OrthographicCamera } from "three";
-import { TrackballControls, CSS3DObject, CSS3DRenderer, OrbitControls } from "three/examples/jsm/Addons.js";
+import { Scene, Color, WebGLRenderer, Camera, OrthographicCamera } from "three";
+import { CSS3DObject, CSS3DRenderer, OrbitControls } from "three/examples/jsm/Addons.js";
 
 var camera: Camera, sceneGl: Scene, rendererGl: WebGLRenderer;
 var sceneCss: Scene, rendererCss: CSS3DRenderer;

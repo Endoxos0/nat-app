@@ -1,21 +1,14 @@
 <script lang="ts">
-    import "$lib/app.css";
+    import "$lib/index.css";
     import "katex/dist/katex.min.css";
-    import { animate, init } from "./script";
+    import { init } from "./script";
     import { onMount, onDestroy } from "svelte";
     import katex from "katex";
-
-    onMount(() => {
-        init();
-        // animate();
-    });
-
-    onDestroy(() => {
-        console.clear();
-    });
+    onMount(init);
+    onDestroy(console.clear);
 </script>
 
 <div id="three">
-    <div id="css"></div>
-    <div id="webgl"></div>
+    <div id="css-renderer"></div>
+    <div id="webgl-renderer"></div>
 </div>

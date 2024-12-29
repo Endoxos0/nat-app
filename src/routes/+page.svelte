@@ -14,7 +14,7 @@
         scalarCurvature,
         ricciTensor,
         energyImpulsTensor,
-    } from "./math";
+    } from "$lib/math";
     import "katex/dist/katex.min.css";
     import "$lib/app.css";
     const eq = katex.renderToString;

@@ -1,5 +1,4 @@
 import katex from "katex";
-import { Vector3 } from "three";
 import { CSS3DObject } from "three/examples/jsm/Addons.js";
 
 export function symbolOf({ c, scale = 0.02 }: { c: string, scale?: number; }) {

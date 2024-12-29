@@ -100,3 +100,13 @@ ul {
 #webgl {
     z-index: -1;
 }
+
+.cont {
+    overflow: hidden;
+}
+
+.sidebar {
+    position: absolute;
+    overflow-y: scroll;
+    width: 50%;
+}

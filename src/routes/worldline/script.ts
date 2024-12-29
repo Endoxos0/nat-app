@@ -23,7 +23,7 @@ export function init() {
 
     rendererCss = new CSS3DRenderer();
     rendererCss.setSize(window.innerWidth, window.innerHeight);
-    (document.querySelector('#css') as HTMLDivElement).appendChild(rendererCss.domElement);
+    (document.querySelector('#css-renderer') as HTMLDivElement).appendChild(rendererCss.domElement);
 
     rendererGl = new WebGLRenderer({ antialias: true, alpha: true });
     rendererGl.setClearColor(0x000000, 0.0);
@@ -32,7 +32,7 @@ export function init() {
     rendererGl.setAnimationLoop(animate);
     rendererGl.shadowMap.enabled = true;
     rendererGl.shadowMap.type = PCFSoftShadowMap; // default THREE.PCFShadowMap
-    (document.querySelector('#webgl') as HTMLDivElement).appendChild(rendererGl.domElement);
+    (document.querySelector('#webgl-renderer') as HTMLDivElement).appendChild(rendererGl.domElement);
 
     controlsGl = new OrbitControls(camera, rendererGl.domElement);
     new OrbitControls(camera, rendererCss.domElement);
@@ -156,8 +156,16 @@ export function init() {
     });
 }
 
-export function animate() {
+function animate() {
     controlsGl.update();
     rendererGl.render(scene, camera);
     rendererCss.render(scene, camera);
+}
+
+export function cleanup() {
+    console.clear();
+    if (rendererCss.domElement)
+        rendererCss.domElement.remove();
+    if (rendererGl.domElement)
+        rendererGl.domElement.remove();
 }

@@ -1,4 +1,4 @@
-import { TubeGeometry, Mesh, MeshBasicMaterial, SphereGeometry, PolarGridHelper, Curve, Vector3 } from "three";
+import { TubeGeometry, Mesh, MeshBasicMaterial, SphereGeometry, Curve, Vector3 } from "three";
 import { CircleCurve, closestPointToPoint } from "./curves";
 
 export class CurveParameter extends Mesh {

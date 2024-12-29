@@ -1,5 +1,5 @@
 <script lang="ts">
-    import "$lib/app.css";
+    import "$lib/index.css";
     import "katex/dist/katex.min.css";
     import { animate, init } from "./script";
     import { onMount, onDestroy } from "svelte";
@@ -19,6 +19,6 @@
     {@html katex.renderToString(`\\tau = 0`)}
 </div>
 <div id="three">
-    <div id="css"></div>
-    <div id="webgl"></div>
+    <div id="css-renderer"></div>
+    <div id="webgl-renderer"></div>
 </div>
