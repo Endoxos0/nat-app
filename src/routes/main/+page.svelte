@@ -74,5 +74,15 @@
                 "\\overrightarrow{v} = v^0\\overrightarrow{e_0} + v^1\\overrightarrow{e_1}",
             )}.
         </div>
+        <div class="paragraph">
+            In de algemene relativiteitstheorie, komt het vaak voor dat meerdere
+            gelijksoortige termen worden opgeteld. Om uitdrukkingen korter te
+            noteren wordt vaak slechts één term opgeschreven, en wordt het
+            index-getal verplaats door een griekse letter. Dit is de
+            Einstein-notatie. De ontbonden snelheidsvector wordt dan
+            bijvoorbeeld {@html katex.renderToString(
+                "\\overrightarrow{v} = v^0\\overrightarrow{e_0} + v^1\\overrightarrow{e_1} = v^{\\alpha}\\overrightarrow{e_{\\alpha}}",
+            )}.
+        </div>
     </div>
 </div>
