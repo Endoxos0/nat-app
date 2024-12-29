@@ -1,12 +1,11 @@
-import { OrthographicCamera, Scene, WebGLRenderer, Color, PCFSoftShadowMap, SphereGeometry, MeshBasicMaterial, Mesh, Vector3, TubeGeometry } from "three";
-import katex, { render } from "katex";
-import { perlinCurve, Noise, perlinCurveP, perlinCurveRising } from "$lib/perlinNoise";
-import { perlinGridLine, perlinGridLineP } from "$lib/gridBasisVectors";
-import { CircleCurve, closestPointToPoint, curveMesh, loopCurve, PerlinCurve, PerlinCurveAtPoint, PerlinCurveRising } from "$lib/curves";
-import { decompose, limitDifference, minimalDifference, Vector, vectorMesh } from "$lib/Vector";
-import { CSS3DObject, CSS3DRenderer, OrbitControls, DragControls } from "three/examples/jsm/Addons.js";
+import { OrthographicCamera, Scene, WebGLRenderer, PCFSoftShadowMap, SphereGeometry, MeshBasicMaterial, Mesh, Vector3, TubeGeometry } from "three";
+import katex from "katex";
+import { Noise } from "$lib/perlinNoise";
+import { closestPointToPoint, PerlinCurve, PerlinCurveAtPoint } from "$lib/curves";
+import { decompose, Vector } from "$lib/Vector";
+import { CSS3DRenderer, OrbitControls, DragControls } from "three/examples/jsm/Addons.js";
 import { symbolOf } from "$lib/symbol";
-import { CircleParameterPointer } from "$lib/parameter";
+import { CurveParameter } from "$lib/parameter";
 
 let camera: OrthographicCamera, scene: Scene, rendererGl: WebGLRenderer, rendererCss: CSS3DRenderer;
 let controlsGl: OrbitControls;
@@ -64,6 +63,7 @@ export function init() {
     const mat1 = new MeshBasicMaterial({ color: 0x2B2B2B });
 
     let perlin = new Noise();
+    let perlinX1 = new Noise();
     let gridSize = 40;
     let coord_shift = .5;
     let stretch = .1;
@@ -72,21 +72,21 @@ export function init() {
         const x0_geometry = new TubeGeometry(x0, 1000, 0.01, 15, false);
         const x0_mesh = new Mesh(x0_geometry, mat1);
         scene.add(x0_mesh);
-        const x1 = new PerlinCurve({ start: -20, end: 20, ySample: stretch * i, shift: coord_shift * i, perlin, theta: Math.PI / 2 });
+        const x1 = new PerlinCurve({ start: -20, end: 20, ySample: stretch * i, shift: coord_shift * i, perlin: perlinX1, theta: Math.PI / 3 });
         const x1_geometry = new TubeGeometry(x1, 1000, 0.01, 15, false);
         const x1_mesh = new Mesh(x1_geometry, mat1);
         scene.add(x1_mesh);
     }
 
-    const path = new PerlinCurve({ amplitude: 4, start: -20, end: 20 });
-    const curve_geometry = new TubeGeometry(path, 1000, 0.01, 15, false);
+    const worldline = new PerlinCurve({ amplitude: 1, start: -20, end: 20 });
+    const curve_geometry = new TubeGeometry(worldline, 1000, 0.01, 15, false);
     const mesh = new Mesh(curve_geometry, mat0);
     scene.add(mesh);
 
-    let interval = [-5, 10];
+    let interval = [-10, 10];
     let N = Math.abs(interval[0]) + Math.abs(interval[1]);
     for (let i = interval[0]; i <= interval[1]; i++) {
-        const point = path.getPointAt((i + Math.abs(interval[0])) / N);
+        const point = worldline.getPointAt((i + Math.abs(interval[0])) / N);
         const offset = new Vector3(0, 0, -.5);
 
         const geometry = new SphereGeometry(.1, 32, 32);
@@ -105,20 +105,19 @@ export function init() {
     let properTime: number = 0;
     let properTimeNode = (document.getElementById("propertime") as HTMLElement);
     let T = Math.abs(interval[0]) / N;
-    const parameterSphere = CircleParameterPointer(.25);
+    const parameterSphere = new CurveParameter(.25);
     dragControls.objects.push(parameterSphere);
-    parameterSphere.position.copy(path.getPointAt(T));
+    parameterSphere.position.copy(worldline.getPointAt(T));
     scene.add(parameterSphere);
     dragControls.addEventListener('drag', function (event) {
-        let [point, t] = closestPointToPoint(event.object.position, path, 0.0001);
-        T = t;
-        event.object.position.copy(point);
-        properTime = interval[0] + t * (interval[1] - interval[0]);
+        (event.object as CurveParameter).restrictToCurve(worldline);
+        T = (event.object as CurveParameter).T;
+        properTime = interval[0] + (event.object as CurveParameter).T * (interval[1] - interval[0]);
         properTimeNode.innerHTML = katex.renderToString(`\\tau =${ properTime.toFixed(2) }`);
     });
 
     let x0 = new PerlinCurveAtPoint({ start: -20, end: 20, point: parameterSphere.position, stretch, shift: coord_shift, perlin });
-    let x1 = new PerlinCurveAtPoint({ start: -20, end: 20, point: parameterSphere.position, stretch, shift: coord_shift, perlin, theta: Math.PI / 2 });
+    let x1 = new PerlinCurveAtPoint({ start: -20, end: 20, point: parameterSphere.position, stretch, shift: coord_shift, perlin: perlinX1, theta: Math.PI / 3 });
     const x0_geometry = new TubeGeometry(x0, 1000, 0.01, 15, false);
     const x1_geometry = new TubeGeometry(x1, 1000, 0.01, 15, false);
     const x0_mesh = new Mesh(x0_geometry, mat0);
@@ -129,7 +128,7 @@ export function init() {
     // scene.add(x1_mesh);
     let [P_e0, T_e0] = closestPointToPoint(parameterSphere.position, x0, 0.0001);
     let [P_e1, T_e1] = closestPointToPoint(parameterSphere.position, x1, 0.0001);
-    let v = new Vector(parameterSphere.position, path.getTangentAt(T).normalize().multiplyScalar(4), '\\overrightarrow{v}', 0x00FF00);
+    let v = new Vector(parameterSphere.position, worldline.getTangentAt(T).normalize().multiplyScalar(4), '\\overrightarrow{v}', 0x00FF00);
     let e0 = new Vector(parameterSphere.position, x0.getTangentAt(T_e0).normalize(), '\\overrightarrow{e_0}', 0x808080);
     let e1 = new Vector(parameterSphere.position, x1.getTangentAt(T_e1).normalize(), '\\overrightarrow{e_1}', 0x808080);
     let ve = decompose(v.vector, e0.vector, undefined, e1.vector);
@@ -148,7 +147,7 @@ export function init() {
 
         [P_e0, T_e0] = closestPointToPoint(parameterSphere.position, x0, 0.0001);
         [P_e1, T_e1] = closestPointToPoint(parameterSphere.position, x1, 0.0001);
-        v.setVector(parameterSphere.position, path.getTangentAt(T).normalize().multiplyScalar(4));
+        v.setVector(parameterSphere.position, worldline.getTangentAt(T).normalize().multiplyScalar(4));
         e0.setVector(parameterSphere.position, x0.getTangentAt(T_e0).normalize());
         e1.setVector(parameterSphere.position, x1.getTangentAt(T_e1).normalize());
         ve = decompose(v.vector, e0.vector, undefined, e1.vector);

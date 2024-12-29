@@ -1,7 +1,8 @@
 import { MeshLineGeometry, MeshLineMaterial, raycast } from "meshline";
-import { Group, SphereGeometry, MeshBasicMaterial, Mesh, Color, Vector2, Vector3, Curve, Matrix3, Matrix2 } from "three";
+import { Group, SphereGeometry, MeshBasicMaterial, Mesh, Color, Vector2, Vector3, Curve, Matrix3, Matrix2, TubeGeometry, Quaternion } from "three";
 import { Noise, perlinCurveSampler } from "./perlinNoise";
 import { findParameterForPoint } from "./gridBasisVectors";
+import { Vector } from "./Vector";
 
 export function loopCurve({ radius, shift = 0, delta = 0.01 }: { delta?: number, radius: number, shift?: number; }) {
     const samples: number[] = [];
@@ -240,3 +241,35 @@ export class PerlinCurveRising extends PerlinCurve {
     }
 }
 
+export class CurveBasisVectorAtPoint<TCurve extends Curve<Vector3>> extends Vector {
+    curve: Curve<Vector3>;
+    norm: number;
+    constructor(at: Vector3, curve: TCurve, norm: number, c: string, color: number = 0x808080) {
+        let [P, T] = closestPointToPoint(at, curve, 0.0001);
+        super(at, curve.getTangentAt(T).normalize().multiplyScalar(norm), c, color);
+        this.curve = curve;
+        this.norm = norm;
+    }
+
+    setVector(at: Vector3) {
+        this.at = at;
+        let [P, T] = closestPointToPoint(at, this.curve, 0.0001);
+        return super.setVector(at, this.curve.getTangentAt(T).normalize().multiplyScalar(this.norm));
+    };
+}
+
+export class PerlinGridLineAtPoint extends Mesh {
+    curve: PerlinCurveAtPoint;
+    constructor(point: Vector3, stretch: number, shift: number, perlin: Noise, theta = 0) {
+        let mat = new MeshBasicMaterial({ color: 0x4a4a4a });
+        let _curve = new PerlinCurveAtPoint({ start: -20, end: 20, point, stretch, shift, perlin, theta });
+        super(new TubeGeometry(_curve, 1000, 0.01, 15, false), mat);
+        this.curve = _curve;
+        this.position.setY(.01);
+    }
+
+    setPoint(point: Vector3) {
+        this.curve.point = point;
+        this.geometry = new TubeGeometry(this.curve, 1000, 0.01, 15, false);
+    }
+}

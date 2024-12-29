@@ -146,19 +146,25 @@ export class Vector extends Group {
     vector;
     c;
     color;
+    symbolOffset;
 
-    constructor(at: Vector3, vector: Vector3, c: string, color: number) {
+    radius = 0.03;
+
+    offsetScale = .4;
+
+    constructor(at: Vector3, vector: Vector3, c: string, color: number, symbolOffset: number = 0) {
         super();
         this.position.setY(.1);
         this.at = at;
         this.vector = vector;
         this.c = c;
         this.color = color;
+        this.symbolOffset = symbolOffset;
 
         const mat = new MeshBasicMaterial({ color: color });
         const V = at.clone().add(this.vector);
         this.line = new LineCurve3(at, V);
-        this.line_geometry = new TubeGeometry(this.line, 1000, 0.01, 15, false);
+        this.line_geometry = new TubeGeometry(this.line, 1000, this.radius, 15, false);
         this.line_mesh = new Mesh(this.line_geometry, mat);
         this.add(this.line_mesh);
 
@@ -171,12 +177,15 @@ export class Vector extends Group {
         this.cone.setRotationFromQuaternion(quaternion);
         this.add(this.cone);
 
-        const offsetScale = .4;
-        const offset: Vector3 = this.vector.clone().normalize().multiplyScalar(offsetScale);
+        let offset: Vector3;
+        if (this.symbolOffset != 0)
+            offset = new Vector3(0, 0, -.7);
+        else
+            offset = this.vector.clone().normalize().multiplyScalar(this.offsetScale);
         this.symbol = symbolOf({ c });
         // this.symbol.layers.set(1);
         this.symbol.rotateX(-Math.PI / 2);
-        this.symbol.position.copy(V).add(offset);
+        this.symbol.position.copy(V).add(offset).add(this.vector.clone().multiplyScalar(this.symbolOffset));
         this.add(this.symbol);
     }
 
@@ -186,7 +195,7 @@ export class Vector extends Group {
         const V = at.clone().add(vector);
         this.line.v1 = at;
         this.line.v2 = V;
-        this.line_geometry = new TubeGeometry(this.line, 1000, 0.01, 15, false);
+        this.line_geometry = new TubeGeometry(this.line, 1000, this.radius, 15, false);
         this.line_mesh.geometry = this.line_geometry;
 
         this.cone.position.copy(V);
@@ -195,11 +204,13 @@ export class Vector extends Group {
         quaternion.setFromUnitVectors(start, this.vector.clone().normalize());
         this.cone.setRotationFromQuaternion(quaternion);
 
-        const offsetScale = .4;
-        const offset: Vector3 = this.vector.clone().normalize().multiplyScalar(offsetScale);
-        this.symbol.position.copy(V).add(offset);
-
-        // return this;
+        let offset: Vector3;
+        if (this.symbolOffset != 0)
+            offset = new Vector3(0, 0, -.7);
+        else
+            offset = this.vector.clone().normalize().multiplyScalar(this.offsetScale);
+        this.symbol.position.copy(V).add(offset).add(this.vector.clone().multiplyScalar(this.symbolOffset));
+        return this;
     };
 
     scaleVector(scalar: number) {
@@ -214,9 +225,12 @@ export class Vector extends Group {
         quaternion.setFromUnitVectors(start, this.vector.clone().normalize());
         this.cone.setRotationFromQuaternion(quaternion);
 
-        const offsetScale = .4;
-        const offset: Vector3 = this.vector.clone().normalize().multiplyScalar(offsetScale);
-        this.symbol.position.copy(V).add(offset);
+        let offset: Vector3;
+        if (this.symbolOffset != 0)
+            offset = new Vector3(0, 0, -.7);
+        else
+            offset = this.vector.clone().normalize().multiplyScalar(this.offsetScale);
+        this.symbol.position.copy(V).add(offset).add(this.vector.clone().multiplyScalar(this.symbolOffset));
 
         return this;
     };

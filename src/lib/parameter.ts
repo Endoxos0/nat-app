@@ -1,15 +1,23 @@
-import { TubeGeometry, Mesh, MeshBasicMaterial, SphereGeometry, PolarGridHelper } from "three";
-import { CircleCurve } from "./curves";
+import { TubeGeometry, Mesh, MeshBasicMaterial, SphereGeometry, PolarGridHelper, Curve, Vector3 } from "three";
+import { CircleCurve, closestPointToPoint } from "./curves";
 
-export function CircleParameterPointer(radius = 1) {
-    const material = new MeshBasicMaterial({ color: 0xFFFFFF });
-    const circle_geometry = new TubeGeometry(new CircleCurve(1, radius), 1000, 0.01, 15, false);
-    const parameterSphere = new Mesh(circle_geometry, material);
+export class CurveParameter extends Mesh {
+    T: number = 0;
+    constructor(radius: number) {
+        super();
+        const material = new MeshBasicMaterial({ color: 0xFFFFFF });
+        const circle_geometry = new TubeGeometry(new CircleCurve(1, radius), 1000, 0.01, 15, false);
+        const parameterSphere = new Mesh(circle_geometry, material);
 
-    const geometry = new SphereGeometry(radius + 0.1, 50, 50);
-    const inner_material = new MeshBasicMaterial({ color: 0xFF0000, transparent: true, opacity: 0 });
-    const sphere = new Mesh(geometry, inner_material);
-    sphere.add(parameterSphere);
+        this.geometry = new SphereGeometry(radius + 0.1, 50, 50);
+        const inner_material = new MeshBasicMaterial({ color: 0xFF0000, transparent: true, opacity: 0 });
+        this.material = inner_material;
+        this.add(parameterSphere);
+    }
 
-    return sphere;
+    restrictToCurve<TCurve extends Curve<Vector3>>(curve: TCurve) {
+        let [point, T] = closestPointToPoint(this.position, curve, 0.0001);
+        this.T = T;
+        this.position.copy(point);
+    }
 }
