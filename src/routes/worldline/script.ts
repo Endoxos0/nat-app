@@ -1,4 +1,4 @@
-import { OrthographicCamera, Scene, WebGLRenderer, PCFSoftShadowMap, SphereGeometry, MeshBasicMaterial, Mesh, Vector3, TubeGeometry } from "three";
+import { OrthographicCamera, Scene, WebGLRenderer, PCFSoftShadowMap, SphereGeometry, MeshBasicMaterial, Mesh, Vector3, TubeGeometry, Group } from "three";
 import katex from "katex";
 import { Noise } from "$lib/perlinNoise";
 import { closestPointToPoint, PerlinCurve, PerlinCurveAtPoint } from "$lib/curves";
@@ -61,7 +61,7 @@ export function init() {
     dragControls.addEventListener('hoveroff', (event) => event.object.scale.divideScalar(hoverScale));
     const mat0 = new MeshBasicMaterial({ color: 0xFFFFFF });
     const mat1 = new MeshBasicMaterial({ color: 0x2B2B2B });
-
+    const grid = new Group();
     let perlin = new Noise();
     let perlinX1 = new Noise();
     let gridSize = 40;
@@ -71,18 +71,19 @@ export function init() {
         const x0 = new PerlinCurve({ start: -20, end: 20, ySample: stretch * i, shift: coord_shift * i, perlin });
         const x0_geometry = new TubeGeometry(x0, 1000, 0.01, 15, false);
         const x0_mesh = new Mesh(x0_geometry, mat1);
-        scene.add(x0_mesh);
         const x1 = new PerlinCurve({ start: -20, end: 20, ySample: stretch * i, shift: coord_shift * i, perlin: perlinX1, theta: Math.PI / 3 });
         const x1_geometry = new TubeGeometry(x1, 1000, 0.01, 15, false);
         const x1_mesh = new Mesh(x1_geometry, mat1);
-        scene.add(x1_mesh);
+        grid.add(x0_mesh, x1_mesh);
     }
+    scene.add(grid);
 
     const worldline = new PerlinCurve({ amplitude: 1, start: -20, end: 20 });
     const curve_geometry = new TubeGeometry(worldline, 1000, 0.01, 15, false);
     const mesh = new Mesh(curve_geometry, mat0);
     scene.add(mesh);
 
+    let worldlineIntervals = new Group();
     let interval = [-10, 10];
     let N = Math.abs(interval[0]) + Math.abs(interval[1]);
     for (let i = interval[0]; i <= interval[1]; i++) {
@@ -93,14 +94,14 @@ export function init() {
         const material = new MeshBasicMaterial({ color: 'white' });
         const mesh = new Mesh(geometry, material);
         mesh.position.copy(point);
-        scene.add(mesh);
 
         point.add(offset);
         let symbol = symbolOf({ c: (i).toString() });
         symbol.rotateX(-Math.PI / 2);
         symbol.position.copy(point);
-        scene.add(symbol);
+        worldlineIntervals.add(mesh, symbol);
     }
+    scene.add(worldlineIntervals);
 
     let properTime: number = 0;
     let properTimeNode = (document.getElementById("propertime") as HTMLElement);
@@ -134,11 +135,7 @@ export function init() {
     let ve = decompose(v.vector, e0.vector, undefined, e1.vector);
     let v0e0 = new Vector(parameterSphere.position, x0.getTangentAt(T_e0).normalize().multiplyScalar(ve.x), 'v^0\\overrightarrow{e_0}', 0x808080);
     let v1e1 = new Vector(parameterSphere.position, x1.getTangentAt(T_e1).normalize().multiplyScalar(ve.z), 'v^1\\overrightarrow{e_1}', 0x808080);
-    scene.add(v);
-    scene.add(e0);
-    scene.add(e1);
-    scene.add(v0e0);
-    scene.add(v1e1);
+    scene.add(v, e0, e1, v0e0, v1e1);
     dragControls.addEventListener('drag', (event) => {
         x0.point = event.object.position;
         x1.point = event.object.position;

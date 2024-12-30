@@ -47,7 +47,7 @@ html {
 .sidebar section {
     scroll-snap-align: center;
     scroll-snap-stop: always;
-    margin-bottom: 10em;
+    margin-bottom: 8em;
 }
 
 .sidebar * {

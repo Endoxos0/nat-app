@@ -50,70 +50,128 @@
     <div class="sidebar" use:onSideBarLoaded>
         <div class="filler"></div>
         <section class="paragraph inactive">
-            Het beeld hiernaast vertegenwoordigt de structuur van ons universum:
-            ruimtetijd.
+            <p>
+                Het vlak hiernaast vertegenwoordigt de structuur van ons
+                universum: ruimtetijd.
+            </p>
+            <p>
+                Ruimtetijd heeft 4 dimensies, maar om te vereenvoudigen worden
+                hiernaast slechts twee weergegeven.
+            </p>
         </section>
         <section class="paragraph inactive">
-            Ruimtetijd heeft 4 dimensies, maar om te vereenvoudigen worden
-            hiernaast slechts twee weergegeven.
+            <p>De curve die is getekend beschrijft een object.</p>
+            <p>De curve is de <b>wereldlijn</b> van het object.</p>
         </section>
         <section class="paragraph inactive">
-            De curve die is getekend beschrijft een object. De curve is de <b
-                >wereldlijn</b
-            > van het object.
+            <p>
+                Om deze wereldlijn te interpreteren, verdeel je de curve in
+                kleine gelijkmatig verdeelde intervallen.
+            </p>
         </section>
         <section class="paragraph inactive">
-            Om deze wereldlijn te interpreteren, verdeel je de curve in kleine
-            gelijkmatig verdeelde intervallen. Vervolgens kies je één punt als
-            oorsprong en nummer je de punten één voor één. Nu is de curve
-            voorzien van een progressie. De opeenvolgende punten stellen nu een
-            traject voor. De curve representeert de beweging van het object door
-            ruimtetijd. De verdeling waarlangs het object beweegt heet de <b
-                >eigentijd</b
-            >
-            van het object en wordt aangeduid met de Griekse letter {@html eq.properTime}
-            (tau). De eigentijd van het object is de tijd dat zijn interne evolutie
-            regeert, oftewel de tijd die voorbij zo gaan op zijn eigen klok.
+            <p>
+                Vervolgens kies je één punt als oorsprong en nummer je de punten
+                één voor één.
+            </p>
+            <p>Nu is de curve voorzien van een progressie.</p>
+            <p>De opeenvolgende punten stellen nu een traject voor.</p>
+            <p>
+                De curve representeert de beweging van het object door
+                ruimtetijd.
+            </p>
+            <p>
+                De verdeling waarlangs het object beweegt heet de <b
+                    >eigentijd</b
+                >
+                van het object en wordt aangeduid met de Griekse letter {@html eq.properTime}
+                (tau).
+            </p>
+            <p>
+                De eigentijd van het object is de tijd dat zijn interne evolutie
+                regeert, oftewel de tijd die voorbij zo gaan op zijn eigen klok.
+            </p>
         </section>
         <section class="paragraph inactive">
             Nu het concept van beweging is bepaald, moet de positie van het
             object worden beschreven naarmate eigentijd verstrijkt.
         </section>
         <section class="paragraph inactive">
-            Om een punt wiskundig te beschrijven, teken je op het oppervlak een
-            assenstelsel. Dit assenstelsel heeft een oorsprong, waaruit de
-            gridlijnen worden geteld, op deze manier kan je de positie van het
-            object bepalen met twee getallen, zijn coördinaten. Het assenstelsel
-            dat gebruikt wordt, is onafhankelijk van de werkelijke positie van
-            het object, het is simpelweg een abstract hulpmiddel om punten te
-            beschrijven met getallen. Afhankelijk van de situatie zijn sommige
-            assenstelsels beter passend dan anderen.
+            <p>
+                Om een punt wiskundig te beschrijven, teken je op het oppervlak
+                een assenstelsel.
+            </p>
+            <p>
+                Dit assenstelsel heeft een oorsprong, waaruit de gridlijnen
+                worden geteld, op deze manier kan je de positie van het object
+                bepalen met twee getallen, zijn coördinaten.
+            </p>
+            <p>
+                Het assenstelsel dat gebruikt wordt, is onafhankelijk van de
+                werkelijke positie van het object, het is simpelweg een abstract
+                hulpmiddel om punten te beschrijven met getallen.
+            </p>
+            <p>
+                Afhankelijk van de situatie zijn sommige assenstelsels beter
+                passend dan anderen.
+            </p>
         </section>
         <section class="paragraph inactive">
-            De vectoriële snelheid van het object in ruimtetijd is een vector
-            die raakt aan de curve. De lengte van deze vector is de snelheid
-            waarmee het object beweegt in ruimte tijd. Deze snelheid is overal
-            gelijk, want de intervallen zijn regelmatig verdeeld. In andere
-            woorden, voor een gegeven eigentijd, beweegt het object altijd
-            dezelfde afstand. Algemener, <i>alle</i> objecten in het universum
-            bewegen met deze snelheid (door ruimtetijd), de lichtsnelheid ({@html eq.c}).
-            En dus {@html eq.vectorNormIsC} (de norm van de vector is altijd de lichtsnelheid)
+            <p>
+                De vectoriële snelheid van het object in ruimtetijd is een
+                vector die raakt aan de curve.
+            </p>
+            <p>
+                De lengte van deze vector is de snelheid waarmee het object
+                beweegt in ruimte tijd.
+            </p>
+            <p>
+                Deze snelheid is overal gelijk, want de intervallen zijn
+                regelmatig verdeeld.
+            </p>
+            <p>
+                In andere woorden, voor een gegeven eigentijd, beweegt het
+                object altijd dezelfde afstand.
+            </p>
+            <p>
+                Algemener, <i>alle</i> objecten in het universum bewegen met
+                deze snelheid (door ruimtetijd), de lichtsnelheid ({@html eq.c}).
+            </p>
+            <p>
+                En dus {@html eq.vectorNormIsC} (de norm van de vector is altijd
+                de lichtsnelheid)
+            </p>
         </section>
         <section class="paragraph inactive">
-            Om de snelheid te beschrijven met de coördinaten, teken je startend
-            vanaf het object twee pijlen die richting van elk coördinaat
-            aangeeft. Deze pijlen heten basisvectoren ({@html katex.renderToString(
-                "e_0, e_1",
-            )}). Met deze twee basisvectoren kan je de snelheidsvector ontbinden
-            tot een som van hun veelvouden, een liniaire combinatie. Oftewel {@html eq.vectorDecomposed}
+            <p>
+                Om de snelheid te beschrijven met de coördinaten, teken je
+                startend vanaf het object twee pijlen die richting van elk
+                coördinaat aangeeft.
+            </p>
+            <p>
+                Deze pijlen heten basisvectoren ({@html katex.renderToString(
+                    "e_0, e_1",
+                )}).
+            </p>
+            <p>
+                Met deze twee basisvectoren kan je de snelheidsvector ontbinden
+                tot een som van hun veelvouden, een liniaire combinatie.
+            </p>
+            {@html eq.vectorDecomposed}
         </section>
         <section class="paragraph inactive">
-            In de algemene relativiteitstheorie, komt het vaak voor dat meerdere
-            gelijksoortige termen worden opgeteld. Om uitdrukkingen korter te
-            noteren wordt vaak slechts één term opgeschreven, en wordt het
-            index-getal verplaats door een griekse letter. Dit is de
-            Einstein-notatie. De ontbonden snelheidsvector wordt dan
-            bijvoorbeeld {@html eq.einsteinNotationExample}
+            <p>
+                In de algemene relativiteitstheorie, komt het vaak voor dat
+                meerdere gelijksoortige termen worden opgeteld.
+            </p>
+            <p>
+                Om uitdrukkingen korter te noteren wordt vaak slechts één term
+                opgeschreven, en wordt het index-getal verplaats door een
+                griekse letter. Dit is de Einstein-notatie.
+            </p>
+            <p>
+                De ontbonden snelheidsvector wordt dan bijvoorbeeld {@html eq.einsteinNotationExample}
+            </p>
         </section>
         <div class="filler"></div>
     </div>
