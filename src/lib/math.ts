@@ -14,3 +14,7 @@ export const metricTensor = LaTeX("g_{\\mu\\nu}");
 export const ricciTensor = LaTeX("R_{\\mu\\nu}");
 export const scalarCurvature = LaTeX("R");
 export const energyImpulsTensor = LaTeX("T_{\\mu\\nu}");
+export const properTime = LaTeX("\\tau");
+export const vectorNormIsC = LaTeX("\\left\\lVert \\overrightarrow{v}\\right\\rVert = c");
+export const vectorDecomposed = LaTeX("\\overrightarrow{v} = v^0\\overrightarrow{e_0} + v^1\\overrightarrow{e_1}", { displayMode: true });
+export const einsteinNotationExample = LaTeX("\\overrightarrow{v} = v^0\\overrightarrow{e_0} + v^1\\overrightarrow{e_1} = v^{\\alpha}\\overrightarrow{e_{\\alpha}}", { displayMode: true });

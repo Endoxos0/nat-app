@@ -41,9 +41,16 @@ html {
     padding-right: 4em;
     text-align: left;
     direction: rtl;
+    scroll-snap-type: y mandatory;
 }
 
-.sidebar div {
+.sidebar section {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    margin-bottom: 10em;
+}
+
+.sidebar * {
     direction: ltr
 }
 
@@ -60,4 +67,20 @@ html {
     pointer-events: none;
     top: 0;
     right: 0;
+}
+
+.filler {
+    height: 50em;
+}
+
+.inactive,
+.inactive * {
+    transition: color .2s ease-in-out;
+    color: rgba(255, 255, 255, 0.1);
+}
+
+.active,
+.active * {
+    transition: color .2s ease-in-out;
+    color: white;
 }
