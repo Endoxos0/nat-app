@@ -118,14 +118,14 @@ section.title h1 {
 
 .cards .horizontal-align h2 {
     color: grey;
-    font-size: 1.5em;
+    font-size: 1vw;
     margin-bottom: .1em;
     margin-right: 1em;
 }
 
 .cards .horizontal-align h3 {
     color: grey;
-    font-size: 1em;
+    font-size: 1vw;
     margin-bottom: .1em;
     margin-right: 1em;
 }
@@ -136,9 +136,13 @@ section.title h1 {
 
 .card p,
 .card li {
-    font-size: 1.5em;
+    font-size: 1.5vw;
     margin: 1em;
     width: 60vw;
+}
+
+.card p a {
+    font-size: 1.5vw;
 }
 
 section.video h1 {
@@ -160,16 +164,16 @@ section.video iframe {
 
 section p .katex-html,
 ul li .katex-html {
-    font-size: 1em;
+    font-size: 1.5vw;
 }
 
 section .katex-html {
-    font-size: 3em;
+    font-size: 3vw;
 }
 
 section a {
-    margin: 1em;
-    font-size: 2em;
+    /* margin: 1em;
+    font-size: 2vw; */
 }
 
 .sidebar section .katex-html {
