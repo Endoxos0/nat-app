@@ -342,10 +342,6 @@
             mits we zijn snelheid weten op een bepaald moment en de waarde van alle
             christoffel symbolen op elk punt in het grid.
         </p>
-        <p>
-            Zie <a href="./christoffel">hier</a> een interactieve animatie van hoe
-            christoffel symbolen veranderen door een grid
-        </p>
     </section>
     <section use:renderScene={ChristoffelScene} class="card explainer renderer">
         <h1>Christoffel Symbolen</h1>

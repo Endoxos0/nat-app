@@ -22,13 +22,13 @@ export function init(CssDomElement: HTMLElement, WebGLDomElement: HTMLElement) {
     scene = new Scene();
 
     rendererCss = new CSS3DRenderer();
-    rendererCss.setSize(window.innerWidth, window.innerHeight);
+    rendererCss.setSize(WebGLDomElement.clientWidth, WebGLDomElement.clientHeight);
     CssDomElement.appendChild(rendererCss.domElement);
 
 
     rendererGl = new WebGLRenderer({ antialias: true, alpha: true });
     rendererGl.setClearColor(0x000000, 0.0);
-    rendererGl.setSize(window.innerWidth, window.innerHeight);
+    rendererGl.setSize(WebGLDomElement.clientWidth, WebGLDomElement.clientHeight);
     rendererGl.setPixelRatio(window.devicePixelRatio);
     rendererGl.setAnimationLoop(animate);
     rendererGl.shadowMap.enabled = true;
@@ -39,7 +39,7 @@ export function init(CssDomElement: HTMLElement, WebGLDomElement: HTMLElement) {
     new OrbitControls(camera, rendererCss.domElement);
 
     const onWindowResize = () => {
-        const aspect = window.innerWidth / window.innerHeight;
+        const aspect = WebGLDomElement.clientWidth / WebGLDomElement.clientHeight;
 
         camera.left = - frustumSize * aspect / 2;
         camera.right = frustumSize * aspect / 2;
@@ -48,8 +48,8 @@ export function init(CssDomElement: HTMLElement, WebGLDomElement: HTMLElement) {
 
         camera.updateProjectionMatrix();
 
-        rendererGl.setSize(window.innerWidth, window.innerHeight);
-        rendererCss.setSize(window.innerWidth, window.innerHeight);
+        rendererGl.setSize(WebGLDomElement.clientWidth, WebGLDomElement.clientHeight);
+        rendererCss.setSize(WebGLDomElement.clientWidth, WebGLDomElement.clientHeight);
     };
     window.addEventListener('resize', onWindowResize);
     //#endregion
