@@ -32,4 +32,4 @@ export const dedtau = LaTeX
         { displayMode: true });
 export const Gamma = LaTeX("\\Gamma");
 export const geodesicEquation = LaTeX(`\\dfrac{\\mathrm{d}v^{\\alpha}}{\\mathrm{d}\\tau}
-    -\\Gamma^{\\alpha}_{\\mu\\nu}v^{\\mu}v^{\\nu}`, { displayMode: true });
+    = -\\Gamma^{\\alpha}_{\\mu\\nu}v^{\\mu}v^{\\nu}`, { displayMode: true });

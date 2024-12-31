@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import katex from "katex";
     import {
         c,
@@ -19,7 +19,43 @@
     import * as m from "$lib/math";
     import "katex/dist/katex.min.css";
     import "$lib/index.css";
+    import { init as wordlineInit } from "./worldline/script";
     const q = katex.renderToString;
+
+    const onVisible = (
+        node: HTMLElement,
+        callback = (node: HTMLElement) => {},
+    ) => {
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                callback(node);
+                observer.disconnect();
+            }
+        });
+        observer.observe(node);
+    };
+
+    const initRenderer = (
+        node: HTMLElement,
+        init: (css_renderer: HTMLElement, webgl_renderer: HTMLElement) => void,
+    ) => {
+        let css_renderer = node.querySelector("#css-renderer") as HTMLElement;
+        let webgl_renderer = node.querySelector(
+            "#webgl-renderer",
+        ) as HTMLElement;
+        init(css_renderer, webgl_renderer);
+    };
+
+    const renderScene = (
+        node: HTMLElement,
+        init: (css_renderer: HTMLElement, webgl_renderer: HTMLElement) => void,
+    ) => {
+        let css_renderer = node.querySelector("#css-renderer") as HTMLElement;
+        let webgl_renderer = node.querySelector(
+            "#webgl-renderer",
+        ) as HTMLElement;
+        init(css_renderer, webgl_renderer);
+    };
 </script>
 
 <div class="cards">
@@ -215,11 +251,15 @@
             tot een som van hun veelvouden, een liniaire combinatie.
             {@html m.vectorDecomposed}
         </p>
-        <p>
-            Zie <a href="./worldline">hier</a> een interactieve animatie van een
-            voorbeeld wereldlijn in een willekeurig assenstelsel.
-        </p>
     </section>
+    <section use:renderScene={wordlineInit} class="card renderer">
+        <div class="dynamic-value" id="propertime">
+            {@html katex.renderToString(`\\tau = 0`)}
+        </div>
+        <div id="css-renderer"></div>
+        <div id="webgl-renderer"></div>
+    </section>
+
     <section class="card explainer">
         <h1>Einstein-notatie</h1>
         <p>
@@ -245,7 +285,6 @@
             {@html m.dvdtauIsZero}
         </p>
     </section>
-
     <section class="card explainer">
         <h1>Geodeten</h1>
         <p>
@@ -306,7 +345,6 @@
             christoffel symbolen veranderen door een grid
         </p>
     </section>
-
     <!-- <section class="card explainer">
         <p>
             Hoewel wel met ons assenstelsel punten kunnen plaatsen, geeft het

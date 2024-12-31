@@ -22,10 +22,10 @@ body {
     position: absolute;
     max-width: 100vw;
     max-height: 100vh;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
+    width: 80%;
+    height: 80%;
+    top: 5em;
+    left: 5em;
     overflow: hidden;
 }
 
@@ -169,6 +169,10 @@ ul li .katex-html {
 
 section .katex-html {
     font-size: 3vw;
+}
+
+section.renderer .katex-html {
+    font-size: 1em;
 }
 
 section a {
