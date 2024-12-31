@@ -8,9 +8,12 @@ div {
     font-family: "Noto Sans", serif;
 }
 
-html {
+html,
+body {
+    margin: 0;
+    height: 100vh;
     background-color: black;
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 #css-renderer,
@@ -83,4 +86,90 @@ html {
 .active * {
     transition: color .2s ease-in-out;
     color: white;
+}
+
+.cards {
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+}
+
+.cards section {
+    padding: 2em;
+    scroll-snap-align: end;
+    height: 100vh;
+    position: relative;
+}
+
+.cards section.center {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+section.title h1 {
+    transition: color .2s ease-in-out;
+    color: white;
+    font-size: 10vw;
+    margin: 0;
+}
+
+.cards .horizontal-align h2 {
+    color: grey;
+    font-size: 1.5em;
+    margin-bottom: .1em;
+    margin-right: 1em;
+}
+
+.cards .horizontal-align h3 {
+    color: grey;
+    font-size: 1em;
+    margin-bottom: .1em;
+    margin-right: 1em;
+}
+
+.cards .horizontal-align {
+    display: flex;
+}
+
+.card p,
+.card li {
+    font-size: 1.5em;
+    margin: 1em;
+    width: 60vw;
+}
+
+section.video h1 {
+    color: white;
+    font-size: 6vw;
+    margin: 0;
+}
+
+section.explainer h1 {
+    font-size: 6vw;
+    margin: 0;
+}
+
+section.video iframe {
+    margin: 1em;
+    width: 90vw;
+    height: 70vh;
+}
+
+section p .katex-html,
+ul li .katex-html {
+    font-size: 1em;
+}
+
+section .katex-html {
+    font-size: 3em;
+}
+
+section a {
+    margin: 1em;
+    font-size: 2em;
+}
+
+.sidebar section .katex-html {
+    font-size: 1em;
 }

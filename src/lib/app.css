@@ -110,3 +110,8 @@ ul {
     overflow-y: scroll;
     width: 50%;
 }
+
+.centerbox {
+    padding: 1em;
+    height: 100;
+}

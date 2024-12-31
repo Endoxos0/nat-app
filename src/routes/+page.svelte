@@ -20,30 +20,32 @@
     const eq = katex.renderToString;
 </script>
 
-<div>
-    <div class="righthalf">
-        <h3>Overzicht + Geschiedenis:</h3>
-        <h3>Donkere materie, Donkere energie</h3>
-        <iframe
-            width="1519"
-            height="607"
-            src="https://www.youtube.com/embed/j1_MrnDEL1M"
-            title="voorstel natuurkunde"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin"
-            allowfullscreen
-        ></iframe>
-    </div>
-
-    <div class="half">
+<div class="cards">
+    <section class="card title center">
+        <div>
+            <h1>Dark Matter</h1>
+            <div class="horizontal-align">
+                <h2>
+                    + dark energy, Keplers third law and gravitational lensing
+                </h2>
+            </div>
+            <div class="horizontal-align">
+                <h3>Jouke van der Leij</h3>
+                <h3>Bryan Visser</h3>
+                <h3>Niels Kamps</h3>
+                <h3>Timothy Nguyen</h3>
+            </div>
+        </div>
+    </section>
+    <section class="card title">
         <h1>Donkere Materie</h1>
         <p>
             Donkere materie is een hypothetische vorm van materie dat niet wordt
             beïnvloed door licht of electromagnetische straling. Zijn bestaan
             wordt gesuggereerd door zwaartekrachteffecten, onverklaarbaar door
             de algemene relativiteitstheorie, tenzij er meer materie is dan wat
-            wordt waargenomen. Deze effecten treden op in meerdere contexten:
+            wordt waargenomen. Deze effecten treden op in meerdere contexten
+            onder andere:
         </p>
         <ul>
             <li>Beweging van sterrenstelsels in sterrenstelselclusters</li>
@@ -54,7 +56,19 @@
                 grotere structuren
             </li>
         </ul>
-
+    </section>
+    <section class="card video" id="3">
+        <h1>Overzicht en Geschiedenis</h1>
+        <iframe
+            src="https://www.youtube.com/embed/j1_MrnDEL1M"
+            title="voorstel natuurkunde"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+        ></iframe>
+    </section>
+    <section class="card explainer">
         <h1>Rotatiekrommen van sterrenstelsels</h1>
         <p>
             De armen van spirale sterrenstelsels draaien rond hun galactisch
@@ -70,7 +84,8 @@
         </p>
         <h2>Keplers Derde Wet</h2>
         {@html KeplersThirdLaw}
-
+    </section>
+    <section class="card explainer">
         <h1>Gravitatielenzen</h1>
         <p>
             Eén van de gevolgen de algemene relativiteitstheorie is de
@@ -87,11 +102,12 @@
         <p>
             Maar waarom buigen massieve objecten licht? In werkelijkheid buigen
             massieve objecten alleen de ruimtetijd om zich heen, en licht volgt
-            slechts de ruimtetijd. De Einstein-Vergelijking vat samen hoe
+            slechts de ruimtetijd. De <b>Einstein-Vergelijking</b> vat samen hoe
             objecten ruimtijd veranderen.
         </p>
-
-        <h2>Einstein-Vergelijking</h2>
+    </section>
+    <section class="card explainer">
+        <h1>Einstein-Vergelijking</h1>
         {@html EFE}
         <p>Hierbij is</p>
         <ul>
@@ -103,7 +119,9 @@
             <li>{@html c} de lichtsnelheid</li>
             <li>{@html gravitationalConstant} de gravitatieconstante</li>
         </ul>
-        <h3>Wat is een <i>tensor</i>?</h3>
+    </section>
+    <section class="card explainer">
+        <h1>Wat is een <i>tensor</i>?</h1>
         <p>
             Een <i>tensor</i> is zoals veel dingen in de wiskunde, een
             generalisatie van
@@ -115,55 +133,10 @@
             Scalairen, vectoren en matrices zijn elk respectievelijk, rang-0, rang-1
             en rang-2 tensoren.
         </p>
-        <h2><a href="./main">Afleiding van Einstein-veldvergelijkingen</a></h2>
-        <p></p>
-    </div>
+        <p>
+            Meer uitleg van de wiskunde achter de Einstein-veldvergelijkingen en
+            de algemene relativiteitstheorie vind je hier:
+        </p>
+        <a href="./meth">Wiskunde achter Einstein-veldvergelijkingen</a>
+    </section>
 </div>
-
-<!-- <h2>Afleiding</h2>
-<p>
-    De fundamentele aannames waarop deze afleiding van de
-    Einstein-veldvergelijkingen berust op:
-</p>
-
-<ul>
-    <li>
-        <b>De vergijkingen moeten <i>tensor-vergelijkingen</i> zijn</b>; De
-        natuurkundige wetten moeten onafhankelijk zijn van wat voor coördinaten
-        er gebruikt worden.
-    </li>
-    <li>De vergijkingen brengen kormming van ruimte in verband met materie</li>
-    <li>
-        Tot een bepaald limiet zijn de vergelijking bij benadering gelijk aan
-        die van Newtoniaanse zwaartekracht.
-    </li>
-    <li>
-        De veldvergelijkingen moeten voldoen aan de (lokale) behoudswetten van
-        energie en impuls.
-    </li>
-</ul>
-<h3>(1) Veronderstel een relatie tussen kromming en materie</h3>
-<p>
-    Deze afleiding van de Einsteinvergelijking berust vooral op een
-    generalisatie van Poissons vergelijking, een veldvergelijking van
-    Newtoniaanse zwaartekracht. Deze vergelijking brengt Newtoniaans
-    gravitatiepotentieel ({@html eq("\\Phi")}) in verband met massa/energie
-    -dichtheid ({@html eq("\\rho")}).
-</p>
-{@html Poissons} (Poissons vergelijking)
-<p>
-    Hierbij is {@html Laplacian} de Laplace-operator, het vertegenwoordigt divergentie
-    van de gradiënt. Volledig uitgeschreven (in 3 dimensies) is het: {@html LaplacianFull}.
-    Maar voor alle praktische doeleinden verschilt het niet veel van zijn
-    1-dimensionale analoog, de tweede afgeleide. Beide meten kromming van een
-    functie in een bepaald punt.
-</p>
-<p>
-    Merk op dat in zowel Poissons vergelijking en de Einstein-Vergelijking, de
-    rechterhand van de vergelijking gaat over energie en materie.
-</p>
-<p>
-    De linkerhand van de vergelijking moet gaan of de kromming van ruimtetijd.
-</p> -->
-
-<!-- {@html html} -->

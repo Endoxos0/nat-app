@@ -19,7 +19,7 @@ export const dictionary = {
 		"/christoffel": [3],
 		"/css3d": [4],
 		"/eqs": [5],
-		"/main": [6],
+		"/meth": [6],
 		"/planet": [7],
 		"/worldline": [8]
 	};
