@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
     import "$lib/index.css";
     import "katex/dist/katex.min.css";
     import { init, cleanup } from "../worldline/script";
@@ -417,4 +417,4 @@
         </section>
         <div class="filler"></div>
     </div>
-</div>
+</div> -->

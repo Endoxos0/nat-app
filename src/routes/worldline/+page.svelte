@@ -1,13 +1,13 @@
 <script lang="ts">
     import "$lib/index.css";
     import "katex/dist/katex.min.css";
-    import { init } from "./script";
+    import { WorldlineScene } from "./script";
     import { onMount, onDestroy } from "svelte";
     import katex from "katex";
 
     let css: HTMLDivElement;
     let webgl: HTMLDivElement;
-    onMount(() => init(css, webgl));
+    onMount(() => new WorldlineScene(css, webgl).start());
     onDestroy(console.clear);
 </script>
 
