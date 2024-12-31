@@ -4,11 +4,13 @@
     import { init } from "./script";
     import { onMount, onDestroy } from "svelte";
     import katex from "katex";
-    onMount(init);
+    let css: HTMLDivElement;
+    let webgl: HTMLDivElement;
+    onMount(() => init(css, webgl));
     onDestroy(console.clear);
 </script>
 
 <div id="three">
-    <div id="css-renderer"></div>
-    <div id="webgl-renderer"></div>
+    <div bind:this={css} id="css-renderer"></div>
+    <div bind:this={webgl} id="webgl-renderer"></div>
 </div>

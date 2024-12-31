@@ -10,7 +10,7 @@ import { CurveParameter as CurveParameter } from "$lib/parameter";
 let camera: OrthographicCamera, scene: Scene, rendererGl: WebGLRenderer, rendererCss: CSS3DRenderer;
 let controlsGl: OrbitControls;
 
-export function init() {
+export function init(CssDomElement: HTMLElement, WebGLDomElement: HTMLElement) {
     //#region Scene Setup
     const aspect = window.innerWidth / window.innerHeight;
     const frustumSize = 50;
@@ -23,7 +23,8 @@ export function init() {
 
     rendererCss = new CSS3DRenderer();
     rendererCss.setSize(window.innerWidth, window.innerHeight);
-    (document.querySelector('#css-renderer') as HTMLDivElement).appendChild(rendererCss.domElement);
+    CssDomElement.appendChild(rendererCss.domElement);
+
 
     rendererGl = new WebGLRenderer({ antialias: true, alpha: true });
     rendererGl.setClearColor(0x000000, 0.0);
@@ -32,7 +33,7 @@ export function init() {
     rendererGl.setAnimationLoop(animate);
     rendererGl.shadowMap.enabled = true;
     rendererGl.shadowMap.type = PCFSoftShadowMap; // default THREE.PCFShadowMap
-    (document.querySelector('#webgl-renderer') as HTMLDivElement).appendChild(rendererGl.domElement);
+    WebGLDomElement.appendChild(rendererGl.domElement);
 
     controlsGl = new OrbitControls(camera, rendererGl.domElement);
     new OrbitControls(camera, rendererCss.domElement);

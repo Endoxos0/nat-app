@@ -19,7 +19,8 @@
     import * as m from "$lib/math";
     import "katex/dist/katex.min.css";
     import "$lib/index.css";
-    import { init as wordlineInit } from "./worldline/script";
+    import { init as WorldlineScene } from "./worldline/script";
+    import { init as ChristoffelScene } from "./christoffel/script";
     const q = katex.renderToString;
 
     const onVisible = (
@@ -252,7 +253,8 @@
             {@html m.vectorDecomposed}
         </p>
     </section>
-    <section use:renderScene={wordlineInit} class="card renderer">
+    <section use:renderScene={WorldlineScene} class="card explainer renderer">
+        <h1>Wereldlijn</h1>
         <div class="dynamic-value" id="propertime">
             {@html katex.renderToString(`\\tau = 0`)}
         </div>
@@ -344,6 +346,11 @@
             Zie <a href="./christoffel">hier</a> een interactieve animatie van hoe
             christoffel symbolen veranderen door een grid
         </p>
+    </section>
+    <section use:renderScene={ChristoffelScene} class="card explainer renderer">
+        <h1>Christoffel Symbolen</h1>
+        <div id="css-renderer"></div>
+        <div id="webgl-renderer"></div>
     </section>
     <!-- <section class="card explainer">
         <p>
