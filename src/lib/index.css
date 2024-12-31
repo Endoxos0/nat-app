@@ -95,8 +95,10 @@ body {
 }
 
 .cards section {
-    padding: 2em;
-    scroll-snap-align: end;
+    padding-left: 2em;
+    scroll-snap-align: center;
+    scroll-behavior: smooth;
+    scroll-snap-stop: always;
     height: 100vh;
     position: relative;
 }
