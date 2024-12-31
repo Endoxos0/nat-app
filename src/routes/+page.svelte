@@ -19,43 +19,29 @@
     import * as m from "$lib/math";
     import "katex/dist/katex.min.css";
     import "$lib/index.css";
-    import { init as WorldlineScene } from "./worldline/script";
-    import { init as ChristoffelScene } from "./christoffel/script";
+    import { WorldlineScene } from "./worldline/script";
+    import type { Constructor, CustomScene } from "$lib/constructor";
+    import { ChristoffelScene } from "./christoffel/script";
     const q = katex.renderToString;
 
-    const onVisible = (
+    const renderScene = function (
         node: HTMLElement,
-        callback = (node: HTMLElement) => {},
-    ) => {
+        scene: Constructor<CustomScene>,
+    ) {
+        let css_renderer = node.querySelector("#css-renderer") as HTMLElement;
+        let webgl_renderer = node.querySelector(
+            "#webgl-renderer",
+        ) as HTMLElement;
+
+        const s = new scene(css_renderer, webgl_renderer);
+
         const observer = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting) {
-                callback(node);
+                s.start();
                 observer.disconnect();
             }
         });
         observer.observe(node);
-    };
-
-    const initRenderer = (
-        node: HTMLElement,
-        init: (css_renderer: HTMLElement, webgl_renderer: HTMLElement) => void,
-    ) => {
-        let css_renderer = node.querySelector("#css-renderer") as HTMLElement;
-        let webgl_renderer = node.querySelector(
-            "#webgl-renderer",
-        ) as HTMLElement;
-        init(css_renderer, webgl_renderer);
-    };
-
-    const renderScene = (
-        node: HTMLElement,
-        init: (css_renderer: HTMLElement, webgl_renderer: HTMLElement) => void,
-    ) => {
-        let css_renderer = node.querySelector("#css-renderer") as HTMLElement;
-        let webgl_renderer = node.querySelector(
-            "#webgl-renderer",
-        ) as HTMLElement;
-        init(css_renderer, webgl_renderer);
     };
 </script>
 
@@ -348,57 +334,77 @@
         <div id="css-renderer"></div>
         <div id="webgl-renderer"></div>
     </section>
+
     <!-- <section class="card explainer">
         <p>
             Hoewel wel met ons assenstelsel punten kunnen plaatsen, geeft het
             geen informatie over de aftstand en hoeken tussen deze punten. De
             intervallen op het grid staan niet overal voor dezelfde aftstand of
-            oriëntatie. Stel je hebt twee punten, je weet hun coördinaten en je
-            wilt de afstand tussen de punten bepalen. In eerste instantie, zo je
+            oriëntatie.
+        </p>
+        <p>
+            Stel je hebt twee punten, je weet hun coördinaten en je wilt de
+            afstand tussen de punten bepalen. In eerste instantie, zo je
             misschien denken aan de stelling van pythagoras. Echter, de stelling
             van pythagoras werkt alleen in een orthogonaal coördinatensysteem.
             Als de assen van het grid elkaar niet overal loodrecht snijden, is
             de stelling van pythagoras niet langer van toepassing. Er moet dus
             een algemenere formule worden gevonden dat werkt ongeacht van het
-            grid dat wordt gebruikt. In het algemeen, het kwadraat van de
-            afstand kan altijd worden geschreven als een som van alle mogelijke
-            combinaties van producten, vermenigvuldigd met bepaalde
-            coëfficienten. Deze coëfficienten hangen af van de vorm van het
-            grid. In het speciale geval waar de gridlijnen vierkanten vormen van
-            lengte 1, zijn deze coëfficienten respectievelijk 1, 0, 0, en 1. En
-            de formule valt terug naar de stelling van pythagoras. De
-            coëfficienten kunnen worden samengebracht tot een tabel, met één rij
-            en één kolom voor elk coördinaat. Dit tabel is een metrische tensor,
-            een tabel waarmee we kleine afstanden kunnen bepalen en wordt
-            meestal aangeduid met {@html katex.renderToString("g")}. Zijn
+            assenstelsel dat wordt gebruikt.
+        </p>
+        <p>
+            In het algemeen, het kwadraat van de afstand kan altijd worden
+            geschreven als een som van alle mogelijke combinaties van producten,
+            vermenigvuldigd met bepaalde coëfficienten. Deze coëfficienten
+            hangen af van de vorm van het grid. In het speciale geval waar de
+            gridlijnen vierkanten vormen van lengte 1, zijn deze coëfficienten
+            respectievelijk 1, 0, 0, en 1. En de formule valt terug naar de
+            stelling van pythagoras.
+        </p>
+        <p>
+            De coëfficienten kunnen worden samengebracht tot een tabel, met één
+            rij en één kolom voor elk coördinaat. Dit tabel is een metrische
+            tensor, een tabel waarmee we kleine afstanden kunnen bepalen en
+            wordt meestal aangeduid met {@html katex.renderToString("g")}. Zijn
             componenten worden genummerd met twee indexen En dus kan het
             kwadraat van de afstand worden geschreven als de som van elk
             componennt van dit tabel, vermenigvuldigd met hun overeenkomstige
-            verschillen tussen 2 punten. Met deze formule kunnen we ook de norm
-            van de snelheidsvector uitdrukken. De veschillen van de coördinaten
-            worden vervangen door de componenten van de snelheid. Met in
-            gedachten dat de norm van de snelheid altijd de lichtsnelheid is,
-            kunnen we een preciesere vorm van deze formule schrijven. Met de
-            metrische tensor kunnen we ook de waarde van de christoffel-symbolen
-            bepalen. De metrische tensor beschrijft de vorm van het grid, en de
-            vorm van het grid is rechstreeks verwant aan hoe de basis vectoren
-            veranderen. Dus door te meten hoe de metrische tensor verandert over
-            het grid, kunnen we ook bepalen hoe de basisvectoren veranderen en
-            dus ook de waarde van de christoffelsymbolen. Wanneer we deze
-            berekening doen, krijgen we een uitdrukking dat afgeleiden van de
-            metrische tensor betrekt. Meestal kan deze vergelijking worden
-            versimpeld, door een geschikt coördinaten systeem te gebruiken Maar
-            nu mist er weer een manier om de metrische tensor te bepalen. De
-            kracht van deze abstracte modellen ligt in het feit dat het geen
+            verschillen tussen 2 punten.
+        </p>
+        <p>
+            Met deze formule kunnen we ook de norm van de snelheidsvector
+            uitdrukken. De veschillen van de coördinaten worden vervangen door
+            de componenten van de snelheid. Met in gedachten dat de norm van de
+            snelheid altijd de lichtsnelheid is, kunnen we een preciesere vorm
+            van deze formule schrijven.
+        </p>
+        <p>
+            Met de metrische tensor kunnen we ook de waarde van de
+            christoffel-symbolen bepalen. De metrische tensor beschrijft de vorm
+            van het grid, en de vorm van het grid is rechstreeks verwant aan hoe
+            de basis vectoren veranderen. Dus door te meten hoe de metrische
+            tensor verandert over het grid, kunnen we ook bepalen hoe de
+            basisvectoren veranderen en dus ook de waarde van de
+            christoffelsymbolen.
+        </p>
+        <p>
+            Wanneer we deze berekening doen, krijgen we een uitdrukking dat
+            afgeleiden van de metrische tensor betrekt. Meestal kan deze
+            vergelijking worden versimpeld, door een geschikt coördinaten
+            systeem te gebruiken.
+        </p>
+        <p>
+            De kracht van deze abstracte modellen ligt in het feit dat het geen
             aannames maakt over de geometrie van ruimtetijd. Voorheen was
             ruimtetijd weergegeven als een plat vlak, maar niets houdt ons tegen
-            om een gebogen vlak in te beelden. Ruimtetijd is namelijk niet
-            altijd plat, zijn geometrie kan gebogen worden en zijn buiging heeft
-            interessante gevolgen voor banen van objecten. Als ruimteijd
-            bijvoorbeeld is gebogen als een bol, zullen twee parallele geodeten
-            startend vanaf de evenaar dichter bij elkaar komen. De kromming van
-            een oppervlak is een belangrijk concept in de algemene
-            relativiteitstheorie, en zal nader gedefinieerd worden.
+            om een gebogen vlak in te beelden.
+        </p>
+        <p>
+            Ruimtetijd is namelijk niet altijd plat, zijn geometrie kan gebogen
+            worden en zijn buiging heeft interessante gevolgen voor banen van
+            objecten. Als ruimteijd bijvoorbeeld is gebogen als een bol, zullen
+            twee parallele geodeten startend vanaf de evenaar dichter bij elkaar
+            komen.
         </p>
     </section> -->
 </div>
