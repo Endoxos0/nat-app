@@ -9,4 +9,5 @@ export abstract class CustomScene {
     }
 
     abstract start(): void;
+    abstract stop(): void;
 }

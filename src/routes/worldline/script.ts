@@ -167,6 +167,10 @@ export class WorldlineScene extends CustomScene {
         });
     }
 
+    stop(): void {
+        this.rendererGl.setAnimationLoop(null);
+    }
+
     cleanup() {
         console.clear();
         if (this.rendererCss.domElement)

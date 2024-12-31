@@ -38,8 +38,8 @@
         const observer = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting) {
                 s.start();
-                observer.disconnect();
-            }
+                // observer.disconnect();
+            } else s.stop();
         });
         observer.observe(node);
     };
