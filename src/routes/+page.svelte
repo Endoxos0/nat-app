@@ -135,16 +135,28 @@
     <section class="card explainer" id="einstein">
         <h1>Einstein-veldvergelijking(en)</h1>
         {@html EFE}
-        <p>Hierbij is</p>
         <ul>
-            <li>{@html einsteinTensor} de einstein-tensor.</li>
             <li>
-                {@html katex.renderToString("\\Lambda")} de kosmologische constante
+                {@html einsteinTensor} de einstein-tensor, beschrijft de kromming
+                van ruimteijd en is gedefinieerd als {@html m.einsteinTensorIs}
+                {@html m.ricciTensor} is hier Ricci-tensor, {@html m.scalarCurvature}
+                is scalaire kromming en {@html metricTensor} de metrische tensor.
+                Samen beschrijven ze de kromming van ruimtetijd.
             </li>
-            <li>{@html metricTensor} de metrische tensor.</li>
+            <li>
+                {@html katex.renderToString("\\Lambda")} de kosmologische constante,
+                houdt rekening met de uitbreiding van het universum.
+            </li>
+            <li>
+                {@html metricTensor} de metrische tensor, definieert afstanden en
+                hoeken tussen punten.
+            </li>
             <li>{@html c} de lichtsnelheid</li>
             <li>{@html gravitationalConstant} de gravitatieconstante</li>
-            <li>{@html energyImpulsTensor} de energie-impuls-tensor</li>
+            <li>
+                {@html energyImpulsTensor} de energie-impuls-tensor, beschrijft de
+                dichtheid en beweging van energie.
+            </li>
         </ul>
     </section>
     <section class="card explainer">
@@ -192,7 +204,7 @@
             >
             van het object. Om deze wereldlijn te interpreteren, verdeel je de curve
             in kleine gelijkmatig verdeelde intervallen. Vervolgens kies je één punt
-            als oorsprong en nummer je de punten één voor één. u is de curve voorzien
+            als oorsprong en nummer je de punten één voor één. Nu is de curve voorzien
             van een progressie. De opeenvolgende punten stellen nu een traject voor.
             De curve representeert de beweging van het object door ruimtetijd. De
             verdeling waarlangs het object beweegt heet de <b>eigentijd</b>
@@ -247,7 +259,6 @@
         <div id="css-renderer"></div>
         <div id="webgl-renderer"></div>
     </section>
-
     <section class="card explainer">
         <h1>Einstein-notatie</h1>
         <p>

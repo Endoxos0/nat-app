@@ -33,3 +33,6 @@ export const dedtau = LaTeX
 export const Gamma = LaTeX("\\Gamma");
 export const geodesicEquation = LaTeX(`\\dfrac{\\mathrm{d}v^{\\alpha}}{\\mathrm{d}\\tau}
     = -\\Gamma^{\\alpha}_{\\mu\\nu}v^{\\mu}v^{\\nu}`, { displayMode: true });
+export const einsteinTensorIs = LaTeX("G_{\\mu\\nu} = R_{\\mu\\nu} - \\frac{1}{2}Rg_{\\mu\\nu}", {
+    displayMode: true
+});
