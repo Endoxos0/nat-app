@@ -296,7 +296,7 @@
             aangeeft. Deze pijlen heten basisvectoren ({@html katex.renderToString(
                 "\\overrightarrow{e_0}, \\overrightarrow{e_1}",
             )}). Met deze twee basisvectoren kan je de snelheidsvector ontbinden
-            tot een som van hun veelvouden, een liniaire combinatie.
+            tot een som van hun veelvouden, een lineaire combinatie.
             {@html m.vectorDecomposed}
         </p>
         <div use:renderScene={VelocityScene} class="interactive renderer">
@@ -323,9 +323,9 @@
             methode te bedenken, om het traject van een object te voorspellen.
             Namelijk, zodra we de snelheid weten op een gegeven moment, is de
             beweging op elk ander moment duidelijk. Dit soort traject noemen we
-            een <i>geodeet</i>
-            Op een geodeet, verandert de vector niet van richting In andere woorden,
-            de afgeleide van de vector ten opzichte van eigentijd is nul.
+            een <i>geodeet</i>. Op een geodeet, verandert de vector niet van
+            richting. In andere woorden, de afgeleide van de vector ten opzichte
+            van eigentijd is nul.
             {@html m.dvdtauIsZero}
         </p>
     </section>
@@ -382,7 +382,7 @@
         <p>
             Deze vector kan natuurlijk ook weer worden ontbonden tot zijn
             componenten, aangeduid met {@html m.Gamma}. In 2 dimensies bestaan
-            er wel 8 van deze componenten, 2 componenten voor 4 verschillende
+            er 8 van deze componenten, 2 componenten voor 4 verschillende
             vectoren. De getallen heten christoffel symbolen en zijn erg
             belangrijk in de algemene relativiteitstheorie, want ze vertellen
             hoe het grid verandert in elke richting. Als we de vorige
@@ -402,7 +402,8 @@
         <div id="webgl-renderer"></div>
     </section>
 
-    <!-- <section class="card explainer">
+    <section class="card explainer">
+        <h1>Afstanden en Hoeken</h1>
         <p>
             Hoewel wel met ons assenstelsel punten kunnen plaatsen, geeft het
             geen informatie over de aftstand en hoeken tussen deze punten. De
@@ -418,26 +419,48 @@
             de stelling van pythagoras niet langer van toepassing. Er moet dus
             een algemenere formule worden gevonden dat werkt ongeacht van het
             assenstelsel dat wordt gebruikt.
+            {@html q(
+                "(\\mathrm{d}x^0)^2 + (\\mathrm{d}x^1)^2 = (\\mathrm{d}s)^2",
+                { displayMode: true },
+            )}
         </p>
+    </section>
+    <section class="card explainer">
+        <h1>Afstanden kwadrateren</h1>
         <p>
-            In het algemeen, het kwadraat van de afstand kan altijd worden
-            geschreven als een som van alle mogelijke combinaties van producten,
-            vermenigvuldigd met bepaalde coëfficienten. Deze coëfficienten
-            hangen af van de vorm van het grid. In het speciale geval waar de
-            gridlijnen vierkanten vormen van lengte 1, zijn deze coëfficienten
-            respectievelijk 1, 0, 0, en 1. En de formule valt terug naar de
-            stelling van pythagoras.
+            In het algemeen, geldt dat het kwadraat van de afstand kan altijd
+            worden geschreven als een som van alle mogelijke combinaties van
+            producten, vermenigvuldigd met bepaalde coëfficienten.
+            {@html q(
+                `(\\mathrm{d}s)^2 = 
+                a\\ \\mathrm{d}x^0\\mathrm{d}x^0 +
+                b\\ \\mathrm{d}x^0\\mathrm{d}x^1 +
+                c\\ \\mathrm{d}x^1\\mathrm{d}x^0 + 
+                d\\ \\mathrm{d}x^1\\mathrm{d}x^1`,
+                {
+                    displayMode: true,
+                },
+            )}
+            Deze coëfficienten hangen af van de vorm van het grid. In het speciale
+            geval waar de gridlijnen vierkanten vormen van lengte 1, zijn deze coëfficienten
+            respectievelijk 1, 0, 0, en 1. En de formule valt terug naar de stelling
+            van pythagoras.
         </p>
+    </section>
+
+    <section class="card explainer">
+        <h1>De Metrische Tensor</h1>
         <p>
             De coëfficienten kunnen worden samengebracht tot een tabel, met één
             rij en één kolom voor elk coördinaat. Dit tabel is een metrische
             tensor, een tabel waarmee we kleine afstanden kunnen bepalen en
             wordt meestal aangeduid met {@html katex.renderToString("g")}. Zijn
-            componenten worden genummerd met twee indexen En dus kan het
+            componenten worden genummerd met twee indexen. En dus kan het
             kwadraat van de afstand worden geschreven als de som van elk
-            componennt van dit tabel, vermenigvuldigd met hun overeenkomstige
+            component van dit tabel, vermenigvuldigd met hun overeenkomstige
             verschillen tussen 2 punten.
         </p>
+        <p>{@html m.metricTensorValue}{@html m.distanceSquaredMetric}</p>
         <p>
             Met deze formule kunnen we ook de norm van de snelheidsvector
             uitdrukken. De veschillen van de coördinaten worden vervangen door
@@ -445,21 +468,33 @@
             snelheid altijd de lichtsnelheid is, kunnen we een preciesere vorm
             van deze formule schrijven.
         </p>
+        <p>{@html m.distanceSquaredMetricInC}</p>
+    </section>
+    <section class="card explainer">
+        <h1>Christoffel Symbolen Berekenen</h1>
         <p>
             Met de metrische tensor kunnen we ook de waarde van de
             christoffel-symbolen bepalen. De metrische tensor beschrijft de vorm
             van het grid, en de vorm van het grid is rechstreeks verwant aan hoe
             de basis vectoren veranderen. Dus door te meten hoe de metrische
-            tensor verandert over het grid, kunnen we ook bepalen hoe de
+            tensor verandert over het grid, kunnen we bepalen hoe de
             basisvectoren veranderen en dus ook de waarde van de
             christoffelsymbolen.
         </p>
+        <p>{@html m.ChristoffelInMetric}</p>
         <p>
             Wanneer we deze berekening doen, krijgen we een uitdrukking dat
             afgeleiden van de metrische tensor betrekt. Meestal kan deze
             vergelijking worden versimpeld, door een geschikt coördinaten
             systeem te gebruiken.
         </p>
+        <p>
+            Met de metrische tensor kunnen we dus echte afstanden relateren aan
+            ons coördinaten systeem.
+        </p>
+    </section>
+    <!-- 
+    <section class="card explainer">
         <p>
             De kracht van deze abstracte modellen ligt in het feit dat het geen
             aannames maakt over de geometrie van ruimtetijd. Voorheen was

@@ -71,6 +71,10 @@ export class WorldlineScene extends CustomScene {
         const mesh = new Mesh(curve_geometry, mat0);
         this.scene.add(mesh);
 
+        let grid = new GridHelper(7, 7, 0x2B2B2B);
+        grid.scale.set(3, 3, 3);
+        this.scene.add(grid);
+
         let worldlineIntervals = new Group();
         let interval = [-10, 10];
         let N = Math.abs(interval[0]) + Math.abs(interval[1]);

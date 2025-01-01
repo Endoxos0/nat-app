@@ -1,6 +1,7 @@
 import katex from "katex";
 
 const LaTeX = katex.renderToString;
+const d = { displayMode: true };
 export const EFE = LaTeX("G_{\\mu\\nu} + \\Lambda g_{\\mu\\nu} = \\frac{8\\pi G}{c^4}T_{\\mu\\nu}");
 export const KeplerThirdLaw = LaTeX("\\frac{r^3}{T^2}=\\frac{GM}{4\\pi^2}");
 export const TproptoR = LaTeX("T^2\\!\\propto\\!r^3");
@@ -55,3 +56,22 @@ export const exVector =
   5
 \\end{matrix}\\right)
 `);
+
+export const distanceSquaredMetric = LaTeX(`(\\mathrm{d}s)^2 = g_{\\mu\\nu}\\ \\mathrm{d}x^{\\mu} \\mathrm{d}x^{\\nu}`, { displayMode: true });
+export const distanceSquaredMetricInC = LaTeX(`c^2 = g_{\\mu\\nu} v^{\\mu} v^{\\nu}`, { displayMode: true });
+export const metricTensorValue =
+    LaTeX(` g = 
+\\left(\\begin{matrix}
+  g_{00} & g_{01} \\\\
+  g_{10} & g_{11}
+\\end{matrix}\\right)
+`, { displayMode: true });
+
+export const ChristoffelInMetric = LaTeX(`
+    \\Gamma^{\\gamma}_{\\alpha\\beta} = 
+    \\frac{g^{\\mu\\sigma}}{2} \\left(
+    \\dfrac{\\mathrm{d}g_{\\sigma\\alpha}}{\\mathrm{d}x^\\beta} + 
+    \\dfrac{\\mathrm{d}g_{\\sigma\\beta}}{\\mathrm{d}x^\\alpha} -
+    \\dfrac{\\mathrm{d}g_{\\alpha\\beta}}{\\mathrm{d}x^\\sigma}
+    \\right)
+    `, d);
