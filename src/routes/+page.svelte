@@ -546,6 +546,11 @@
             zijn eigentijd, zijn voortgang langs zijn traject, verloopt niet.
             Dit object is beter bekend als <b>licht</b>.
         </p>
+        <p>
+            Buiten deze diagonalen, worden afstanden wortels van negatieve
+            getallen, imaginaire getallen, en geen object zou een punt binnen
+            deze grenzen kunnen bereiken.
+        </p>
     </section>
     <section class="card explainer">
         <h1>Christoffel Symbolen Berekenen</h1>
