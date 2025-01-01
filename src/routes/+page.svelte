@@ -39,7 +39,9 @@
             if (entries[0].isIntersecting) {
                 s.start();
                 // observer.disconnect();
-            } else s.stop();
+            } else {
+                s.stop();
+            }
         });
         observer.observe(node);
     };
@@ -110,6 +112,12 @@
         </p>
         <h2>Keplers Derde Wet</h2>
         {@html KeplersThirdLaw}
+        <video controls width="250">
+            <source
+                src="https://upload.wikimedia.org/wikipedia/commons/transcoded/4/4c/Comparison_of_rotating_disc_galaxies_in_the_distant_Universe_and_the_present_day.webm/Comparison_of_rotating_disc_galaxies_in_the_distant_Universe_and_the_present_day.webm.720p.vp9.webm"
+                type="video/webm"
+            />
+        </video>
     </section>
     <section class="card explainer">
         <h1>Gravitatielenzen</h1>
@@ -131,6 +139,10 @@
             slechts de ruimtetijd. De <b>Einstein-Vergelijking</b> vat samen hoe
             objecten ruimtijd veranderen.
         </p>
+        <img
+            src="https://upload.wikimedia.org/wikipedia/commons/0/03/Black_hole_lensing_web.gif"
+            alt="Gravitatielens"
+        />
     </section>
     <section class="card explainer" id="einstein">
         <h1>Einstein-veldvergelijking(en)</h1>
@@ -159,7 +171,7 @@
             </li>
         </ul>
     </section>
-    <section class="card explainer">
+    <section class="card explainer" id="tensor">
         <h1>Wat is een <i>tensor</i>?</h1>
         <p>
             De Einstein-veldvergelijking is een tensor vergelijking, dat houdt
@@ -180,8 +192,17 @@
             en rang-2 tensoren.
         </p>
         <p>
-            De vergelijkingen vatten samen hoe de kromming van ruimtetijd wordt
-            beïnvloed door de aanwezigheid van energie. Maar wat is ruimtetijd?
+            {@html m.e}, {@html m.phi}, {@html m.pi}, {@html m.c}, {@html q(
+                "10^{-23}",
+            )}, {@html q("1")},
+            {@html q("72")} zijn scalairen.
+            {@html m.exVector} is een 3-vector.
+            {@html m.exMatrix} is een 2x2-matrix.
+        </p>
+        <p>
+            De Einstein-veldvergelijkingen vatten samen hoe de kromming van
+            ruimtetijd wordt beïnvloed door de aanwezigheid van energie. Maar
+            wat is ruimtetijd?
         </p>
 
         <!-- <p>

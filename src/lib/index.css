@@ -91,7 +91,7 @@ body {
 .cards {
     height: 100vh;
     overflow-y: scroll;
-    scroll-snap-type: y mandatory;
+    /* scroll-snap-type: y mandatory; */
 }
 
 .cards section {
@@ -182,4 +182,12 @@ section a {
 
 .sidebar section .katex-html {
     font-size: 1em;
+}
+
+section video,
+section img {
+    position: absolute;
+    right: 1vw;
+    top: 20vw;
+    width: 30vw;
 }

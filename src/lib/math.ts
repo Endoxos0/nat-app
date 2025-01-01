@@ -36,3 +36,22 @@ export const geodesicEquation = LaTeX(`\\dfrac{\\mathrm{d}v^{\\alpha}}{\\mathrm{
 export const einsteinTensorIs = LaTeX("G_{\\mu\\nu} = R_{\\mu\\nu} - \\frac{1}{2}Rg_{\\mu\\nu}", {
     displayMode: true
 });
+export const pi = LaTeX("\\pi");
+export const e = LaTeX("e");
+export const phi = LaTeX("\\phi");
+
+export const exMatrix =
+    LaTeX(`
+\\left(\\begin{matrix}
+  1 & 0 \\\\
+  0 & 1
+\\end{matrix}\\right)
+`);
+export const exVector =
+    LaTeX(`
+\\left(\\begin{matrix}
+  2 \\\\
+  8 \\\\
+  5
+\\end{matrix}\\right)
+`);
