@@ -16,8 +16,8 @@ body {
     overflow: hidden;
 }
 
-#css-renderer,
-#webgl-renderer,
+section #css-renderer,
+section #webgl-renderer,
 .container {
     position: absolute;
     max-width: 100vw;
@@ -190,4 +190,20 @@ section img {
     right: 1vw;
     top: 20vw;
     width: 30vw;
+}
+
+section div.interactive {
+    position: absolute;
+    right: 1vw;
+    top: 20vw;
+    width: 30vw;
+    height: 30vh;
+}
+
+section div.interactive #css-renderer,
+section div.interactive #webgl-renderer {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }

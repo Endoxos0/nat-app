@@ -19,7 +19,8 @@
     import * as m from "$lib/math";
     import "katex/dist/katex.min.css";
     import "$lib/index.css";
-    import { WorldlineScene } from "./worldline/script";
+    import { WorldlineScene } from "$lib/Scenes";
+    import { WorldlineScene as WorldlineVelocityScene } from "./worldline/script";
     import type { Constructor, CustomScene } from "$lib/constructor";
     import { ChristoffelScene } from "./christoffel/script";
     const q = katex.renderToString;
@@ -233,6 +234,14 @@
             (tau). De eigentijd van het object is de tijd dat zijn interne evolutie
             regeert, oftewel de tijd die voorbij zo gaan op zijn eigen klok.
         </p>
+        <div use:renderScene={WorldlineScene} class="interactive">
+            <div id="css-renderer"></div>
+            <div id="webgl-renderer">
+                <div class="dynamic-value" id="propertime">
+                    {@html katex.renderToString(`\\tau = 0`)}
+                </div>
+            </div>
+        </div>
     </section>
     <section class="card explainer">
         <h1>Assenstelsels</h1>
@@ -272,7 +281,10 @@
             {@html m.vectorDecomposed}
         </p>
     </section>
-    <section use:renderScene={WorldlineScene} class="card explainer renderer">
+    <section
+        use:renderScene={WorldlineVelocityScene}
+        class="card explainer renderer"
+    >
         <h1>Wereldlijn</h1>
         <div class="dynamic-value" id="propertime">
             {@html katex.renderToString(`\\tau = 0`)}
