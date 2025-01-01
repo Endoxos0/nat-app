@@ -58,7 +58,7 @@ export const exVector =
 `);
 
 export const distanceSquaredMetric = LaTeX(`(\\mathrm{d}s)^2 = g_{\\mu\\nu}\\ \\mathrm{d}x^{\\mu} \\mathrm{d}x^{\\nu}`, { displayMode: true });
-export const distanceSquaredMetricInC = LaTeX(`c^2 = g_{\\mu\\nu} v^{\\mu} v^{\\nu}`, { displayMode: true });
+export const distanceSquaredMetricInC = LaTeX(`c^2 = g_{\\mu\\nu}\\ v^{\\mu} v^{\\nu}`, { displayMode: true });
 export const metricTensorValue =
     LaTeX(` g = 
 \\left(\\begin{matrix}
@@ -75,3 +75,16 @@ export const ChristoffelInMetric = LaTeX(`
     \\dfrac{\\mathrm{d}g_{\\alpha\\beta}}{\\mathrm{d}x^\\sigma}
     \\right)
     `, d);
+
+export const minkowskiMetric =
+    LaTeX(` g = 
+\\left(\\begin{matrix}
+  c^2 & 0 \\\\
+  0 & -1
+\\end{matrix}\\right)
+`, { displayMode: true });
+;
+
+export const metricTensorDerivativeIsZero = LaTeX("\\dfrac{\\mathrm{d}g_{\\alpha\\beta}}{\\mathrm{d}x^\\gamma} = 0");
+export const christoffelIsZero = LaTeX("\\Gamma^{\\gamma}_{\\alpha\\beta}");
+export const geodesicEquationIsZero = LaTeX("\\dfrac{\\mathrm{d}v^{\\alpha}}{\\mathrm{d}\\tau} = 0");

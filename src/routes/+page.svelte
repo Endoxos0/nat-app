@@ -471,6 +471,83 @@
         <p>{@html m.distanceSquaredMetricInC}</p>
     </section>
     <section class="card explainer">
+        <h1>Minkowski</h1>
+        <p>
+            In een lege ruimtetijd is de metrische tensor gegeven door de de
+            Minkowski metric.
+            {@html m.minkowskiMetric}
+            Waar de eerste rij en kolom staat voor onze tijd en de tweede voor een
+            ruimtelijke dimensie. Deze metrische tensor is heel simpel, aangezien
+            het niet afhangt van de coördinaten, het is overal in het assenstelsel
+            gelijk. Daarom zijn al zijn afgeleiden ook nul, {@html m.metricTensorDerivativeIsZero},
+            waardoor alle christoffel-symbolen ook nul zijn, {@html m.christoffelIsZero}.
+        </p>
+        <p>
+            Hieruit blijkt vervolgens dat de geodetische vergelijking ook nul
+            is,{@html m.geodesicEquationIsZero}. In andere woorden de
+            componenten van de snelheid van een object niet veranderen in een
+            lege ruimtetijd, zijn traject is een rechte lijn.
+        </p>
+    </section>
+    <section class="card explainer">
+        <h1>Tijdsdilatatie</h1>
+        <p>
+            Uit de Minkowski metric blijkt het fenomeen genaamd tijdsdilatatie.
+            Als we de waarden van de Minkowski metric invullen in een eerdere
+            vergelijking; waarin de norm van de snelheid gerelateerd werd aan
+            zijn componenten; kunnen we de tijdelijke snelheid van een object
+            uitdrukken als een functie van zijn ruimtelijke snelheid.
+        </p>
+        <p>
+            {@html m.distanceSquaredMetricInC}
+            {@html q(
+                `c^2 =
+                    c^2\\ \\mathrm{d}v^t\\mathrm{d}v^t +
+                    0\\ \\mathrm{d}v^t\\mathrm{d}v^x +
+                    0\\ \\mathrm{d}v^x\\mathrm{d}v^t -
+                    1\\ \\mathrm{d}v^x\\mathrm{d}v^x`,
+                {
+                    displayMode: true,
+                },
+            )}
+            {@html q(
+                `
+             v^t = \\sqrt{1 + \\frac{(v^x)^2}{c^2}}
+            `,
+                { displayMode: true },
+            )}
+        </p>
+        <p>
+            {@html q("v^t")} is groter als het object sneller door de ruimtelijke
+            dimensies. Dit betekent dat hoe sneller een object reist door de ruimte,
+            hoe sneller onze tijd voorbij zal gaan, vergeleken met zijn eigentijd.
+        </p>
+    </section>
+    <section class="card explainer">
+        <h1>Snelheids Limiet</h1>
+        <p>
+            De Minkowski metric lijkt in eerste instantie heel simpel, maar als
+            de factor van {@html q("-1")} toont aan dat de dimensies van ruimte fundamenteel
+            anders zijn dan de dimensie van tijd.
+        </p>
+        <p>
+            Neem bijvoorbeeld een bewegend object in een lege ruimtetijd en meet
+            de afstand die het scheidt van een punt in de toekomst. Als je dit
+            punt in de ruimtelijke dimensies verschuift, zou je verwachten dat
+            de afstand toeneemt. Echter, door de {@html q("-1")} in de Minkowski
+            metric blijkt dat deze afstand juist kleiner is. Hoe meer het toekomstige
+            punt wordt verschoven in de ruimte, hoe kleiner de afstand wordt.
+        </p>
+        <p>
+            Wanneer het punt op een diagonaal wordt verschoven; als het punt
+            door netzoveel tijd als ruimte is verwijderd van het object, is de
+            afstand gek genoeg {@html q("0")}. Een ander object dat op dit
+            diagonaal reist zou helemaal geen afstand afleggen in ruimtijd, en
+            zijn eigentijd, zijn voortgang langs zijn traject, verloopt niet.
+            Dit object is beter bekend als <b>licht</b>.
+        </p>
+    </section>
+    <section class="card explainer">
         <h1>Christoffel Symbolen Berekenen</h1>
         <p>
             Met de metrische tensor kunnen we ook de waarde van de
