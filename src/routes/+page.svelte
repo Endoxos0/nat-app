@@ -25,7 +25,7 @@
         VelocityScene,
         WorldlineScene,
     } from "$lib/Scenes";
-    import { WorldlineScene as WorldlineVelocityScene } from "./worldline/script";
+    import { AbitraryGridScene } from "./worldline/script";
     import type { Constructor, CustomScene } from "$lib/constructor";
     import { ChristoffelScene } from "./christoffel/script";
     const q = katex.renderToString;
@@ -304,17 +304,6 @@
             <div id="webgl-renderer"></div>
         </div>
     </section>
-    <section
-        use:renderScene={WorldlineVelocityScene}
-        class="card explainer renderer"
-    >
-        <div id="css-renderer"></div>
-        <div id="webgl-renderer">
-            <div class="dynamic-value" id="propertime">
-                {@html katex.renderToString(`\\tau = 0`)}
-            </div>
-        </div>
-    </section>
     <section class="card explainer" id="einstein-notation">
         <h1>Einstein-notatie</h1>
         <p>
@@ -376,6 +365,17 @@
             een speciale vector, want het hangt niet meer af van het traject van
             een object, maar alleen maar van de structuur van het assenstelsel zelf.
         </p>
+    </section>
+    <section
+        use:renderScene={AbitraryGridScene}
+        class="card explainer renderer"
+    >
+        <div id="css-renderer"></div>
+        <div id="webgl-renderer">
+            <div class="dynamic-value" id="propertime">
+                {@html katex.renderToString(`\\tau = 0`)}
+            </div>
+        </div>
     </section>
     <section class="card explainer" id="christoffel-symbols">
         <h1>Christoffel-symbolen</h1>
