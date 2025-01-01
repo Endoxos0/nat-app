@@ -308,11 +308,12 @@
         use:renderScene={WorldlineVelocityScene}
         class="card explainer renderer"
     >
-        <div class="dynamic-value" id="propertime">
-            {@html katex.renderToString(`\\tau = 0`)}
-        </div>
         <div id="css-renderer"></div>
-        <div id="webgl-renderer"></div>
+        <div id="webgl-renderer">
+            <div class="dynamic-value" id="propertime">
+                {@html katex.renderToString(`\\tau = 0`)}
+            </div>
+        </div>
     </section>
     <section class="card explainer" id="einstein-notation">
         <h1>Einstein-notatie</h1>

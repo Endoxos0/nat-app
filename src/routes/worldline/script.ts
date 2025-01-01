@@ -109,7 +109,7 @@ export class WorldlineScene extends CustomScene {
         this.scene.add(worldlineIntervals);
 
         let properTime: number = 0;
-        let properTimeNode = (document.getElementById("propertime") as HTMLElement);
+        let properTimeNode = (WebGLDomElement.querySelector("#propertime") as HTMLElement);
         let T = Math.abs(interval[0]) / N;
         const parameterSphere = new CurveParameter(.25);
         dragControls.objects.push(parameterSphere);
