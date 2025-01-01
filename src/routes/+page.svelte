@@ -22,6 +22,7 @@
     import {
         PolarGridScene,
         SquareGridScene,
+        VelocityScene,
         WorldlineScene,
     } from "$lib/Scenes";
     import { WorldlineScene as WorldlineVelocityScene } from "./worldline/script";
@@ -53,7 +54,7 @@
 </script>
 
 <div class="cards">
-    <section class="card title center">
+    <section class="card title center" id="title">
         <div>
             <h1>Dark Matter</h1>
             <div class="horizontal-align">
@@ -70,7 +71,7 @@
             </div>
         </div>
     </section>
-    <section class="card title">
+    <section class="card title" id="introduction">
         <h1>Donkere Materie</h1>
         <p>
             Donkere materie is een hypothetische vorm van materie dat niet wordt
@@ -90,7 +91,7 @@
             </li>
         </ul>
     </section>
-    <section class="card video" id="3">
+    <section class="card video" id="video">
         <h1>Overzicht en Geschiedenis</h1>
         <iframe
             src="https://www.youtube.com/embed/j1_MrnDEL1M"
@@ -101,7 +102,7 @@
             allowfullscreen
         ></iframe>
     </section>
-    <section class="card explainer">
+    <section class="card explainer" id="kepler">
         <h1>Rotatiekrommen van sterrenstelsels</h1>
         <p>
             De armen van spirale sterrenstelsels draaien rond hun galactisch
@@ -124,7 +125,7 @@
             />
         </video>
     </section>
-    <section class="card explainer">
+    <section class="card explainer" id="gravitational-lensing">
         <h1>Gravitatielenzen</h1>
         <p>
             Eén van de gevolgen de algemene relativiteitstheorie is de
@@ -149,7 +150,7 @@
             alt="Gravitatielens"
         />
     </section>
-    <section class="card explainer" id="einstein">
+    <section class="card explainer" id="einstein-equations">
         <h1>Einstein-veldvergelijking(en)</h1>
         {@html EFE}
         <ul>
@@ -176,7 +177,7 @@
             </li>
         </ul>
     </section>
-    <section class="card explainer" id="tensor">
+    <section class="card explainer" id="tensors">
         <h1>Wat is een <i>tensor</i>?</h1>
         <p>
             De Einstein-veldvergelijking is een tensor vergelijking, dat houdt
@@ -216,7 +217,7 @@
         </p>
         <a href="./meth">Wiskunde achter Einstein-veldvergelijkingen</a> -->
     </section>
-    <section class="card explainer">
+    <section class="card explainer" id="worldline-intro">
         <h1>Ruimtetijd en wereldlijnen</h1>
         <p>
             Ruimtetijd is de structuur van ons universum en heeft 4 dimensies, 3
@@ -242,7 +243,7 @@
             Verplaats het cirkeltje hiernaast om te zien hoe eigentijd
             verandert.
         </p>
-        <div use:renderScene={WorldlineScene} class="interactive">
+        <div use:renderScene={WorldlineScene} class="interactive renderer">
             <div id="css-renderer"></div>
             <div id="webgl-renderer">
                 <div class="dynamic-value" id="propertime">
@@ -251,7 +252,7 @@
             </div>
         </div>
     </section>
-    <section class="card explainer">
+    <section class="card explainer" id="grids">
         <h1>Assenstelsels</h1>
         <p>
             Nu het concept van beweging is bepaald, moet de positie van het
@@ -276,7 +277,7 @@
             </div>
         </div>
     </section>
-    <section class="card explainer">
+    <section class="card explainer" id="velocity">
         <h1>Snelheid</h1>
         <p>
             De vectoriële snelheid van het object in ruimtetijd is een vector
@@ -298,6 +299,10 @@
             tot een som van hun veelvouden, een liniaire combinatie.
             {@html m.vectorDecomposed}
         </p>
+        <div use:renderScene={VelocityScene} class="interactive renderer">
+            <div id="css-renderer"></div>
+            <div id="webgl-renderer"></div>
+        </div>
     </section>
     <section
         use:renderScene={WorldlineVelocityScene}
@@ -309,7 +314,7 @@
         <div id="css-renderer"></div>
         <div id="webgl-renderer"></div>
     </section>
-    <section class="card explainer">
+    <section class="card explainer" id="einstein-notation">
         <h1>Einstein-notatie</h1>
         <p>
             In de algemene relativiteitstheorie, komt het vaak voor dat meerdere
@@ -320,7 +325,7 @@
             bijvoorbeeld {@html m.einsteinNotationExample}
         </p>
     </section>
-    <section class="card explainer">
+    <section class="card explainer" id="geodesics">
         <h1>Geodeten</h1>
         <p>
             In ruimte tijd, in de afwezigheid van krachten, bewegen objecten van
@@ -355,7 +360,7 @@
             terwijl het object beweegt.
         </p>
     </section>
-    <section class="card explainer">
+    <section class="card explainer" id="geodesic-equation">
         <h1>Geodeten</h1>
         <p>
             De evolutie van een basisvector langs de wereldlijn kan ook worden
@@ -371,7 +376,7 @@
             een object, maar alleen maar van de structuur van het assenstelsel zelf.
         </p>
     </section>
-    <section class="card explainer">
+    <section class="card explainer" id="christoffel-symbols">
         <h1>Christoffel-symbolen</h1>
         <p>
             Deze vector kan natuurlijk ook weer worden ontbonden tot zijn
