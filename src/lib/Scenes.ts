@@ -1,4 +1,4 @@
-import { OrthographicCamera, Scene, WebGLRenderer, PCFSoftShadowMap, SphereGeometry, MeshBasicMaterial, Mesh, Vector3, TubeGeometry, Group } from "three";
+import { OrthographicCamera, Scene, WebGLRenderer, PCFSoftShadowMap, SphereGeometry, MeshBasicMaterial, Mesh, Vector3, TubeGeometry, Group, GridHelper, PolarGridHelper, Sphere } from "three";
 import katex from "katex";
 import { Noise } from "$lib/perlinNoise";
 import { closestPointToPoint, PerlinCurve, PerlinCurveAtPoint } from "$lib/curves";
@@ -22,7 +22,7 @@ export class WorldlineScene extends CustomScene {
         const frustumSize = 50;
         this.camera = new OrthographicCamera(frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, .1, 100);
         this.camera.position.set(0, 10, 0);
-        this.camera.zoom = 4.1;
+        this.camera.zoom = 7;
         this.camera.updateProjectionMatrix();
         // camera.position.set(-2.4517250746012427, 6.920649464598646, 6.7892308214349395);
         this.scene = new Scene();
@@ -127,4 +127,156 @@ export class WorldlineScene extends CustomScene {
     }
 }
 
+
+export class SquareGridScene extends CustomScene {
+    camera: OrthographicCamera;
+    scene: Scene;
+    rendererGl: WebGLRenderer;
+    rendererCss: CSS3DRenderer;
+    controlsGl: OrbitControls;
+
+    constructor(CssDomElement: HTMLElement, WebGLDomElement: HTMLElement) {
+        super(CssDomElement, WebGLDomElement);
+        //#region Scene Setup
+        const aspect = window.innerWidth / window.innerHeight;
+        const frustumSize = 50;
+        this.camera = new OrthographicCamera(frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, .1, 100);
+        this.camera.position.set(0, 10, 0);
+        this.camera.zoom = 4.1;
+        this.camera.updateProjectionMatrix();
+        // camera.position.set(-2.4517250746012427, 6.920649464598646, 6.7892308214349395);
+        this.scene = new Scene();
+
+        this.rendererCss = new CSS3DRenderer();
+        this.rendererCss.setSize(WebGLDomElement.clientWidth, WebGLDomElement.clientHeight);
+        CssDomElement.appendChild(this.rendererCss.domElement);
+
+        this.rendererGl = new WebGLRenderer({ antialias: true, alpha: true });
+        this.rendererGl.setClearColor(0x000000, 0.0);
+        this.rendererGl.setSize(WebGLDomElement.clientWidth, WebGLDomElement.clientHeight);
+        this.rendererGl.setPixelRatio(window.devicePixelRatio);
+        this.rendererGl.shadowMap.enabled = true;
+        this.rendererGl.shadowMap.type = PCFSoftShadowMap; // default THREE.PCFShadowMap
+        WebGLDomElement.appendChild(this.rendererGl.domElement);
+
+        this.controlsGl = new OrbitControls(this.camera, this.rendererGl.domElement);
+
+        const onWindowResize = () => {
+            const aspect = WebGLDomElement.clientWidth / WebGLDomElement.clientHeight;
+
+            this.camera.left = - frustumSize * aspect / 2;
+            this.camera.right = frustumSize * aspect / 2;
+            this.camera.top = frustumSize / 2;
+            this.camera.bottom = - frustumSize / 2;
+
+            this.camera.updateProjectionMatrix();
+
+            this.rendererGl.setSize(WebGLDomElement.clientWidth, WebGLDomElement.clientHeight);
+            this.rendererCss.setSize(WebGLDomElement.clientWidth, WebGLDomElement.clientHeight);
+        };
+        window.addEventListener('resize', onWindowResize);
+        //#endregion
+        this.scene.add(new GridHelper(10, 10));
+        const mat0 = new MeshBasicMaterial({ color: 0xFFFFFF });
+        let OriginGeometry = new SphereGeometry(.2, 50, 50);
+        let OriginMesh = new Mesh(OriginGeometry, mat0);
+        this.scene.add(OriginMesh);
+    };
+
+    start() {
+        this.rendererGl.setAnimationLoop(() => {
+            this.controlsGl.update();
+            this.rendererGl.render(this.scene, this.camera);
+            this.rendererCss.render(this.scene, this.camera);
+        });
+    }
+
+    stop(): void {
+        this.rendererGl.setAnimationLoop(null);
+    }
+
+    cleanup() {
+        console.clear();
+        if (this.rendererCss.domElement)
+            this.rendererCss.domElement.remove();
+        if (this.rendererGl.domElement)
+            this.rendererGl.domElement.remove();
+    }
+}
+
+export class PolarGridScene extends CustomScene {
+    camera: OrthographicCamera;
+    scene: Scene;
+    rendererGl: WebGLRenderer;
+    rendererCss: CSS3DRenderer;
+    controlsGl: OrbitControls;
+
+    constructor(CssDomElement: HTMLElement, WebGLDomElement: HTMLElement) {
+        super(CssDomElement, WebGLDomElement);
+        //#region Scene Setup
+        const aspect = window.innerWidth / window.innerHeight;
+        const frustumSize = 50;
+        this.camera = new OrthographicCamera(frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, .1, 100);
+        this.camera.position.set(0, 10, 0);
+        this.camera.zoom = 2;
+        this.camera.updateProjectionMatrix();
+        // camera.position.set(-2.4517250746012427, 6.920649464598646, 6.7892308214349395);
+        this.scene = new Scene();
+
+        this.rendererCss = new CSS3DRenderer();
+        this.rendererCss.setSize(WebGLDomElement.clientWidth, WebGLDomElement.clientHeight);
+        CssDomElement.appendChild(this.rendererCss.domElement);
+
+        this.rendererGl = new WebGLRenderer({ antialias: true, alpha: true });
+        this.rendererGl.setClearColor(0x000000, 0.0);
+        this.rendererGl.setSize(WebGLDomElement.clientWidth, WebGLDomElement.clientHeight);
+        this.rendererGl.setPixelRatio(window.devicePixelRatio);
+        this.rendererGl.shadowMap.enabled = true;
+        this.rendererGl.shadowMap.type = PCFSoftShadowMap; // default THREE.PCFShadowMap
+        WebGLDomElement.appendChild(this.rendererGl.domElement);
+
+        this.controlsGl = new OrbitControls(this.camera, this.rendererGl.domElement);
+
+        const onWindowResize = () => {
+            const aspect = WebGLDomElement.clientWidth / WebGLDomElement.clientHeight;
+
+            this.camera.left = - frustumSize * aspect / 2;
+            this.camera.right = frustumSize * aspect / 2;
+            this.camera.top = frustumSize / 2;
+            this.camera.bottom = - frustumSize / 2;
+
+            this.camera.updateProjectionMatrix();
+
+            this.rendererGl.setSize(WebGLDomElement.clientWidth, WebGLDomElement.clientHeight);
+            this.rendererCss.setSize(WebGLDomElement.clientWidth, WebGLDomElement.clientHeight);
+        };
+        window.addEventListener('resize', onWindowResize);
+        //#endregion
+        this.scene.add(new PolarGridHelper(10, 16, 8, 64));
+        const mat0 = new MeshBasicMaterial({ color: 0xFFFFFF });
+        let OriginGeometry = new SphereGeometry(.2, 50, 50);
+        let OriginMesh = new Mesh(OriginGeometry, mat0);
+        this.scene.add(OriginMesh);
+    };
+
+    start() {
+        this.rendererGl.setAnimationLoop(() => {
+            this.controlsGl.update();
+            this.rendererGl.render(this.scene, this.camera);
+            this.rendererCss.render(this.scene, this.camera);
+        });
+    }
+
+    stop(): void {
+        this.rendererGl.setAnimationLoop(null);
+    }
+
+    cleanup() {
+        console.clear();
+        if (this.rendererCss.domElement)
+            this.rendererCss.domElement.remove();
+        if (this.rendererGl.domElement)
+            this.rendererGl.domElement.remove();
+    }
+}
 

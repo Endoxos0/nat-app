@@ -19,7 +19,11 @@
     import * as m from "$lib/math";
     import "katex/dist/katex.min.css";
     import "$lib/index.css";
-    import { WorldlineScene } from "$lib/Scenes";
+    import {
+        PolarGridScene,
+        SquareGridScene,
+        WorldlineScene,
+    } from "$lib/Scenes";
     import { WorldlineScene as WorldlineVelocityScene } from "./worldline/script";
     import type { Constructor, CustomScene } from "$lib/constructor";
     import { ChristoffelScene } from "./christoffel/script";
@@ -234,6 +238,10 @@
             (tau). De eigentijd van het object is de tijd dat zijn interne evolutie
             regeert, oftewel de tijd die voorbij zo gaan op zijn eigen klok.
         </p>
+        <p>
+            Verplaats het cirkeltje hiernaast om te zien hoe eigentijd
+            verandert.
+        </p>
         <div use:renderScene={WorldlineScene} class="interactive">
             <div id="css-renderer"></div>
             <div id="webgl-renderer">
@@ -257,6 +265,16 @@
             beschrijven met getallen. Afhankelijk van de situatie zijn sommige
             assenstelsels beter passend dan anderen.
         </p>
+        <div class="right-order-vertical">
+            <div use:renderScene={SquareGridScene} class="interactive">
+                <div id="css-renderer"></div>
+                <div id="webgl-renderer"></div>
+            </div>
+            <div use:renderScene={PolarGridScene} class="interactive">
+                <div id="css-renderer"></div>
+                <div id="webgl-renderer"></div>
+            </div>
+        </div>
     </section>
     <section class="card explainer">
         <h1>Snelheid</h1>
@@ -285,7 +303,6 @@
         use:renderScene={WorldlineVelocityScene}
         class="card explainer renderer"
     >
-        <h1>Wereldlijn</h1>
         <div class="dynamic-value" id="propertime">
             {@html katex.renderToString(`\\tau = 0`)}
         </div>
