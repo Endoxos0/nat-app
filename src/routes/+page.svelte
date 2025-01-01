@@ -329,7 +329,7 @@
             {@html m.dvdtauIsZero}
         </p>
     </section>
-    <section class="card explainer">
+    <section class="card explainer" id="changing-basis-vectors">
         <h1>Geodeten</h1>
         <p>
             De beweging van objecten is van nature niet versnellend, en dus
@@ -344,11 +344,22 @@
             {@html m.dvdtauFactors2}
             Je krijgt een relatie tussen de verandering in de componenten van snelheid,
             en de verandering van de basisvectoren zelf. De basisvectoren kunnen
-            wel degelijk veranderen door het traject, want het grid dat wordt gekozen
+            inderdaad veranderen door het traject, want het grid dat wordt gekozen
             als assenstelsel hoeft niet per se regelmatig te zijn. Hoewel de vector
             zelf niet veranderd, kunnen zijn componenten op het grid wel veranderen
             terwijl het object beweegt.
         </p>
+    </section>
+    <section
+        use:renderScene={AbitraryGridScene}
+        class="card explainer renderer"
+    >
+        <div id="css-renderer"></div>
+        <div id="webgl-renderer">
+            <div class="dynamic-value" id="propertime">
+                {@html katex.renderToString(`\\tau = 0`)}
+            </div>
+        </div>
     </section>
     <section class="card explainer" id="geodesic-equation">
         <h1>Geodeten</h1>
@@ -365,17 +376,6 @@
             een speciale vector, want het hangt niet meer af van het traject van
             een object, maar alleen maar van de structuur van het assenstelsel zelf.
         </p>
-    </section>
-    <section
-        use:renderScene={AbitraryGridScene}
-        class="card explainer renderer"
-    >
-        <div id="css-renderer"></div>
-        <div id="webgl-renderer">
-            <div class="dynamic-value" id="propertime">
-                {@html katex.renderToString(`\\tau = 0`)}
-            </div>
-        </div>
     </section>
     <section class="card explainer" id="christoffel-symbols">
         <h1>Christoffel-symbolen</h1>

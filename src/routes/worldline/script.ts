@@ -83,7 +83,7 @@ export class AbitraryGridScene extends CustomScene {
         }
         this.scene.add(grid);
 
-        const worldline = new PerlinCurve({ amplitude: 0, start: -20, end: 20, theta: Math.PI / 10 });
+        const worldline = new PerlinCurve({ amplitude: 0, start: -20, end: 20, theta: Math.PI / 14 });
         const curve_geometry = new TubeGeometry(worldline, 1000, 0.01, 15, false);
         const mesh = new Mesh(curve_geometry, mat0);
         this.scene.add(mesh);
