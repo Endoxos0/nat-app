@@ -1,5 +1,5 @@
 import { MeshLineGeometry, MeshLineMaterial, raycast } from "meshline";
-import { Group, SphereGeometry, MeshBasicMaterial, Mesh, Color, Vector2, Vector3, Curve, Matrix3, Matrix2, TubeGeometry, Quaternion } from "three";
+import { Group, SphereGeometry, MeshBasicMaterial, Mesh, Color, Vector2, Vector3, Curve, Matrix3, Matrix2, TubeGeometry, Quaternion, Euler } from "three";
 import { Noise, perlinCurveSampler } from "./perlinNoise";
 import { findParameterForPoint } from "./gridBasisVectors";
 import { Vector } from "./Vector";
@@ -8,9 +8,6 @@ export function loopCurve({ radius, shift = 0, delta = 0.01 }: { delta?: number,
     const samples: number[] = [];
     for (let I = 0; I < 2 * Math.PI; I += delta) {
         samples.push(
-            radius * Math.cos(I),
-            shift,
-            radius * Math.sin(I),
         );
     }
     return samples;
@@ -271,5 +268,32 @@ export class PerlinGridLineAtPoint extends Mesh {
     setPoint(point: Vector3) {
         this.curve.point = point;
         this.geometry = new TubeGeometry(this.curve, 1000, 0.01, 15, false);
+    }
+}
+
+
+export class LoopCurve extends Curve<Vector3> {
+    radius: number;
+    shift: Vector3;
+    quat: Euler;
+    start: number;
+    end: number;
+
+    constructor({ radius, shift = new Vector3(), quat = new Euler(), start = 0, end = 2 * Math.PI }: { radius: number, shift?: Vector3, quat?: Euler, start?: number, end?: number; }) {
+        super();
+        this.radius = radius;
+        this.shift = shift;
+        this.quat = quat;
+        this.start = start;
+        this.end = end;
+    }
+
+    getPoint(t: number, optionalTarget = new Vector3()) {
+        t = this.start + t * (this.end - this.start);
+        const tx = this.radius * Math.cos(t);
+        const ty = 0;
+        const tz = this.radius * Math.sin(t);
+
+        return optionalTarget.set(tx, ty, tz).add(this.shift).applyEuler(this.quat);
     }
 }

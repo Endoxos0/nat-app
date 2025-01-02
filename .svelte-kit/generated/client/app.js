@@ -9,13 +9,15 @@ export const nodes = [
 	() => import('./nodes/5'),
 	() => import('./nodes/6'),
 	() => import('./nodes/7'),
-	() => import('./nodes/8')
+	() => import('./nodes/8'),
+	() => import('./nodes/9')
 ];
 
 export const server_loads = [];
 
 export const dictionary = {
 		"/": [2],
+		"/_test": [9],
 		"/christoffel": [3],
 		"/css3d": [4],
 		"/eqs": [5],

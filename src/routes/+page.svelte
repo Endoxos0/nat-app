@@ -20,6 +20,7 @@
     import "katex/dist/katex.min.css";
     import "$lib/index.css";
     import {
+        GeodesicsOnSphereScene,
         PolarGridScene,
         SquareGridScene,
         VelocityScene,
@@ -575,13 +576,15 @@
             ons coördinaten systeem.
         </p>
     </section>
-    <!-- 
+
     <section class="card explainer">
+        <h1>Kromming</h1>
         <p>
             De kracht van deze abstracte modellen ligt in het feit dat het geen
             aannames maakt over de geometrie van ruimtetijd. Voorheen was
             ruimtetijd weergegeven als een plat vlak, maar niets houdt ons tegen
-            om een gebogen vlak in te beelden.
+            om een gebogen vlak in te beelden, waarop we net zo makkelijk
+            coördinaten kunnen definieren.
         </p>
         <p>
             Ruimtetijd is namelijk niet altijd plat, zijn geometrie kan gebogen
@@ -590,5 +593,12 @@
             twee parallele geodeten startend vanaf de evenaar dichter bij elkaar
             komen.
         </p>
-    </section> -->
+        <div
+            use:renderScene={GeodesicsOnSphereScene}
+            class="interactive renderer"
+        >
+            <div id="css-renderer"></div>
+            <div id="webgl-renderer"></div>
+        </div>
+    </section>
 </div>

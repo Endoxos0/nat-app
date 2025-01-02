@@ -1,7 +1,6 @@
-import { OrthographicCamera, Scene, WebGLRenderer, PCFSoftShadowMap, SphereGeometry, MeshBasicMaterial, Mesh, Vector3, TubeGeometry, Group, GridHelper, PolarGridHelper, Sphere } from "three";
+import { OrthographicCamera, Scene, WebGLRenderer, PCFSoftShadowMap, SphereGeometry, MeshBasicMaterial, Mesh, Vector3, TubeGeometry, Group, GridHelper, PolarGridHelper, Quaternion, Euler } from "three";
 import katex from "katex";
-import { Noise } from "$lib/perlinNoise";
-import { closestPointToPoint, PerlinCurve, PerlinCurveAtPoint } from "$lib/curves";
+import { LoopCurve, PerlinCurve } from "$lib/curves";
 import { decompose, Vector } from "$lib/Vector";
 import { CSS3DRenderer, OrbitControls, DragControls } from "three/examples/jsm/Addons.js";
 import { symbolOf } from "$lib/symbol";
@@ -392,3 +391,97 @@ export class PolarGridScene extends CustomScene {
     }
 }
 
+export class GeodesicsOnSphereScene extends CustomScene {
+    camera: OrthographicCamera;
+    scene: Scene;
+    rendererGl: WebGLRenderer;
+    rendererCss: CSS3DRenderer;
+    controlsGl: OrbitControls;
+
+    constructor(CssDomElement: HTMLElement, WebGLDomElement: HTMLElement) {
+        super(CssDomElement, WebGLDomElement);
+        //#region Scene Setup
+        const aspect = window.innerWidth / window.innerHeight;
+        const frustumSize = 50;
+        this.camera = new OrthographicCamera(frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, .1, 100);
+        this.camera.position.set(10, 10, 0);
+        this.camera.zoom = 20;
+        this.camera.updateProjectionMatrix();
+        // camera.position.set(-2.4517250746012427, 6.920649464598646, 6.7892308214349395);
+        this.scene = new Scene();
+
+        this.rendererCss = new CSS3DRenderer();
+        this.rendererCss.setSize(WebGLDomElement.clientWidth, WebGLDomElement.clientHeight);
+        CssDomElement.appendChild(this.rendererCss.domElement);
+
+        this.rendererGl = new WebGLRenderer({ antialias: true, alpha: true });
+        this.rendererGl.setClearColor(0x000000, 0.0);
+        this.rendererGl.setSize(WebGLDomElement.clientWidth, WebGLDomElement.clientHeight);
+        this.rendererGl.setPixelRatio(window.devicePixelRatio);
+        this.rendererGl.shadowMap.enabled = true;
+        this.rendererGl.shadowMap.type = PCFSoftShadowMap; // default THREE.PCFShadowMap
+        WebGLDomElement.appendChild(this.rendererGl.domElement);
+
+        this.controlsGl = new OrbitControls(this.camera, this.rendererGl.domElement);
+
+        const onWindowResize = () => {
+            const aspect = WebGLDomElement.clientWidth / WebGLDomElement.clientHeight;
+
+            this.camera.left = - frustumSize * aspect / 2;
+            this.camera.right = frustumSize * aspect / 2;
+            this.camera.top = frustumSize / 2;
+            this.camera.bottom = - frustumSize / 2;
+
+            this.camera.updateProjectionMatrix();
+
+            this.rendererGl.setSize(WebGLDomElement.clientWidth, WebGLDomElement.clientHeight);
+            this.rendererCss.setSize(WebGLDomElement.clientWidth, WebGLDomElement.clientHeight);
+        };
+        window.addEventListener('resize', onWindowResize);
+        //#endregion
+
+        const mat0 = new MeshBasicMaterial({ color: 0x2b2b2b });
+        const mat1 = new MeshBasicMaterial({ color: 0xFF0000 });
+
+        let radius = 1;
+        const group = new Group();
+        for (let i = 0; i <= 2 * Math.PI; i += Math.PI / 11)
+            group.add(new Mesh(new TubeGeometry(new LoopCurve({ radius, quat: new Euler(Math.PI / 2, 0, i) }), 1000, 0.005, 15, false), mat0));
+
+        let n = 6;
+        for (let i = - radius; i <= radius; i += radius / n) {
+            let shift = new Vector3(0, i, 0);
+            group.add(new Mesh(new TubeGeometry(new LoopCurve({ radius: radius * Math.sqrt(1 - i * i), shift, quat: new Euler(0, 0, 0) }), 1000, 0.005, 15, false), mat0));
+        }
+
+        group.add(new Mesh(new TubeGeometry(new LoopCurve({ radius, quat: new Euler(Math.PI / 2, 0, 0), start: 1.5 * Math.PI, end: 2.5 * Math.PI }), 1000, 0.006, 15, false), mat1));
+        group.add(new Mesh(new TubeGeometry(new LoopCurve({ radius, quat: new Euler(Math.PI / 2, 0, Math.PI / 11), start: 1.5 * Math.PI, end: 2.5 * Math.PI }), 1000, 0.006, 15, false), mat1));
+
+        const geometry = new SphereGeometry(radius - 0.01, 50, 50);
+        const material = new MeshBasicMaterial({ color: 0x000000 });
+        const sphere = new Mesh(geometry, material);
+        group.add(sphere);
+
+        this.scene.add(group);
+    };
+
+    start() {
+        this.rendererGl.setAnimationLoop(() => {
+            this.controlsGl.update();
+            this.rendererGl.render(this.scene, this.camera);
+            this.rendererCss.render(this.scene, this.camera);
+        });
+    }
+
+    stop(): void {
+        this.rendererGl.setAnimationLoop(null);
+    }
+
+    cleanup() {
+        console.clear();
+        if (this.rendererCss.domElement)
+            this.rendererCss.domElement.remove();
+        if (this.rendererGl.domElement)
+            this.rendererGl.domElement.remove();
+    }
+}
